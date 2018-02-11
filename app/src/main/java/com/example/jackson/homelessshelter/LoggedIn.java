@@ -53,7 +53,9 @@ public class LoggedIn extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            Intent previous = new Intent(LoggedIn.this, LoginActivity.class);
+            finish();
+            startActivity(previous);
         }
     }
 
@@ -96,9 +98,9 @@ public class LoggedIn extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.log_out) {
-            Intent next = new Intent(LoggedIn.this, LoginActivity.class);
+            Intent previous = new Intent(LoggedIn.this, LoginActivity.class);
             finish();
-            startActivity(next);
+            startActivity(previous);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
