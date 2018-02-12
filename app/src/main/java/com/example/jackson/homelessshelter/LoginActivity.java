@@ -83,6 +83,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
 
         Button mEmailSignInButton = (Button) findViewById(R.id.log_in);
+        Button registration = (Button) findViewById(R.id.register);
+        registration.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                register();
+            }
+        });
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -198,6 +205,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
         return password.equals("pass");
+    }
+    public void register() {
+        Intent regScreen = new Intent(LoginActivity.this, Registration.class);
+        startActivity(regScreen);
     }
 
     /**
