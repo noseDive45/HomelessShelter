@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "34909590482",
+    "firebase_url": "https://homeless-shelter.firebaseio.com",
+    "project_id": "homeless-shelter",
+    "storage_bucket": "homeless-shelter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:34909590482:android:eeb5ba30d63098a1",
+        "android_client_info": {
+          "package_name": "com.example.jackson.homelessshelter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "34909590482-fqirn29luiefs7rmkseg2qntg96c4oda.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtZoLAL3bZe-g1XG6uscVl3rXqfnScPKA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
