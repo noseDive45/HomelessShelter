@@ -89,6 +89,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         System.out.println("fuck");
         Log.w("Trying", "login");
         fAuth = FirebaseAuth.getInstance();
+        if (fAuth.getCurrentUser() != null) {
+            Intent next = new Intent(LoginActivity.this, LoggedIn.class);
+            startActivity(next);
+        }
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -224,6 +228,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     if (task.isSuccessful()) {
                         Log.wtf("Trying", "dijorno");
                         FirebaseUser user = fAuth.getCurrentUser();
+                        showProgress(false);
                         Intent next = new Intent(LoginActivity.this, LoggedIn.class);
                         startActivity(next);
                     } else {

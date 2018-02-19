@@ -14,12 +14,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.io.Serializable;
 
 public class LoggedIn extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private LoggedIn loggedIn;
+    private FirebaseAuth fAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,15 +30,6 @@ public class LoggedIn extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -99,6 +93,7 @@ public class LoggedIn extends AppCompatActivity
 
         } else if (id == R.id.log_out) {
             Intent previous = new Intent(LoggedIn.this, LoginActivity.class);
+            fAuth.getInstance().signOut();
             finish();
             startActivity(previous);
         }
