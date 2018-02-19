@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
@@ -18,6 +19,15 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+
+// Firebase
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseUser;
 
 public class Registration extends AppCompatActivity {
 
@@ -33,6 +43,7 @@ public class Registration extends AppCompatActivity {
     private EditText password2;
     private View regView;
     private View progressView;
+    private FirebaseAuth fAuth;
     private static final String[] DUMMY_CREDENTIALS = new String[]{
             "foo@example.com:hello", "bar@example.com:world"
     };
@@ -50,6 +61,7 @@ public class Registration extends AppCompatActivity {
         password = (EditText) findViewById(R.id.reg_password);
         password2 = (EditText) findViewById(R.id.reg_password2);
         username = (EditText) findViewById(R.id.reg_email);
+        fAuth = FirebaseAuth.getInstance();
         regButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -135,9 +147,25 @@ public class Registration extends AppCompatActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
-            Intent next = new Intent(Registration.this, LoggedIn.class);
-            startActivity(next);
+            System.out.println(un + " " + p1);
+            showProgress(true);fAuth.createUserWithEmailAndPassword(un, p1)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                FirebaseUser user = fAuth.getCurrentUser();
+                                Intent next = new Intent(Registration.this, LoggedIn.class);
+                                startActivity(next);
+                            } else {
+                                FirebaseAuthException e = (FirebaseAuthException )task.getException();
+                                Toast.makeText(Registration.this, "Failed Registration: "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            // ...
+                        }
+                    });
         }
     }
     private boolean isTaken(String un) {

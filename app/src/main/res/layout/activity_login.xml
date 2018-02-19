@@ -8,6 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="#AED581"
     tools:context="com.example.jackson.homelessshelter.LoginActivity">
 
     <!-- Login progress -->
@@ -65,10 +66,12 @@
 
             <Button
                 android:id="@+id/log_in"
-                style="?android:textAppearanceSmall"
-                android:layout_width="match_parent"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="173dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:background="#AED581"
+                android:gravity="center"
                 android:text="Log In"
                 android:textStyle="bold" />
 
@@ -82,12 +85,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center"
                     android:text="First time user?" />
 
                 <Button
                     android:id="@+id/register"
-                    style="@style/Widget.AppCompat.Button.Colored"
+                    style="@android:style/Widget.Button.Transparent"
                     android:layout_width="4dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

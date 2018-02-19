@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,8 +30,21 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.List;
+
+// Firebase
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseNetworkException;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseUser;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -62,6 +76,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
 
+    // Get firebase auth instance
+    private FirebaseAuth fAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +86,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
+        System.out.println("fuck");
+        Log.w("Trying", "login");
+        fAuth = FirebaseAuth.getInstance();
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -81,6 +101,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 return false;
             }
         });
+
+        // See if user is already logged in
+
 
         Button mEmailSignInButton = (Button) findViewById(R.id.log_in);
         Button registration = (Button) findViewById(R.id.register);
@@ -150,10 +173,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
+//        if (mAuthTask != null) {
+//            return;
+//        }
 
+        Log.wtf("Trying", "login");
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -166,7 +190,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (TextUtils.isEmpty(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -177,11 +201,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
-            cancel = true;
         }
+//        else if (!isEmailValid(email)) {
+//            mEmailView.setError(getString(R.string.error_invalid_email));
+//            focusView = mEmailView;
+//            cancel = true;
+//        }
 
         if (cancel) {
             // There was an error; don't attempt login and focus the first
@@ -191,9 +216,37 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            Intent next = new Intent(LoginActivity.this, LoggedIn.class);
-            startActivity(next);
+            Log.wtf("Trying", "trying");
+            fAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this,
+                    new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        Log.wtf("Trying", "dijorno");
+                        FirebaseUser user = fAuth.getCurrentUser();
+                        Intent next = new Intent(LoginActivity.this, LoggedIn.class);
+                        startActivity(next);
+                    } else {
+                        try {
+                            throw task.getException();
+                        } catch (FirebaseAuthInvalidUserException e) {
+                            mEmailView.setError("Invalid Emaild Id");
+                            mEmailView.requestFocus();
+                        } catch (FirebaseAuthInvalidCredentialsException e) {
+                            mPasswordView.setError("Invalid Password");
+                            mPasswordView.requestFocus();
+                        } catch (FirebaseNetworkException e) {
+                            Log.wtf("Trying", "login");
+                        } catch (Exception e) {
+                            Log.wtf("Trying", "login");
+                        }
+                        showProgress(false);
+                    }
+                }
+            });
+//            mAuthTask = new UserLoginTask(email, password);
+//            Intent next = new Intent(LoginActivity.this, LoggedIn.class);
+//            startActivity(next);
         }
     }
     private boolean isEmailValid(String email) {
@@ -201,10 +254,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         return email.equals("user");
     }
 
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.equals("pass");
-    }
+//    private boolean isPasswordValid(String password) {
+//        //TODO: Replace this with your own logic
+//        return password.equals("pass");
+//    }
     public void register() {
         Intent regScreen = new Intent(LoginActivity.this, Registration.class);
         startActivity(regScreen);

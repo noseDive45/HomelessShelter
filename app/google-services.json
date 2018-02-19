@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "34909590482-fpcudivdf30ihais9tek01jrsai83jmt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.jackson.homelessshelter",
+            "certificate_hash": "f8f818815c326926fb11df148afb39835b2e8072"
+          }
+        },
+        {
           "client_id": "34909590482-fqirn29luiefs7rmkseg2qntg96c4oda.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "34909590482-fqirn29luiefs7rmkseg2qntg96c4oda.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
