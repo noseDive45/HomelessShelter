@@ -14,6 +14,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -28,25 +29,26 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
-
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+//
 public class Registration extends AppCompatActivity {
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private Registration.UserRegistrationTask authTask = null;
 
     private TextInputEditText firstName;
     private TextInputEditText lastName;
+    private DatabaseReference database;
+    private DatabaseReference userRef;
     private EditText username;
     private EditText password;
     private EditText password2;
     private View regView;
     private View progressView;
     private FirebaseAuth fAuth;
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,8 @@ public class Registration extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Button regButton = (Button) findViewById(R.id.reg_submit);
+        database = FirebaseDatabase.getInstance().getReference();
+        userRef = database.child("user");
 
         firstName = (TextInputEditText) findViewById(R.id.reg_firstname);
         lastName = (TextInputEditText) findViewById(R.id.reg_lastname);
@@ -70,6 +74,7 @@ public class Registration extends AppCompatActivity {
         });
         regView = findViewById(R.id.linlay);
         progressView = findViewById(R.id.progressBar);
+        Log.w("Trying", "login");
     }
     public void attemptRegistration() {
 
@@ -84,6 +89,7 @@ public class Registration extends AppCompatActivity {
         String p1 = password.getText().toString();
         String p2 = password2.getText().toString();
         boolean cancel = false;
+        Log.w("Trying", "login");
         View focusView = null;
         // Check for a first name
         if (TextUtils.isEmpty(fn)) {
@@ -138,18 +144,25 @@ public class Registration extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             System.out.println(un + " " + p1);
-            showProgress(true);fAuth.createUserWithEmailAndPassword(un, p1)
+            Log.e("Trying", "login");
+            if (isValidEmail(un)) {
+                un += "@seekingshelter.com";
+            }
+            showProgress(true);
+            fAuth.createUserWithEmailAndPassword(un, p1)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 FirebaseUser user = fAuth.getCurrentUser();
+                                addToDataBase(user);
                                 Intent next = new Intent(Registration.this, LoggedIn.class);
                                 startActivity(next);
                             } else {
                                 FirebaseAuthException e = (FirebaseAuthException )task.getException();
                                 Toast.makeText(Registration.this, "Failed Registration: "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                showProgress(false);
                                 return;
                             }
 
@@ -158,9 +171,37 @@ public class Registration extends AppCompatActivity {
                     });
         }
     }
+
+    public void addToDataBase(FirebaseUser user) {
+        String uid = user.getUid();
+        userRef.child(uid);
+        userRef.child(uid).child("email").setValue(user.getEmail());
+        if (!isValidEmail(username.getText().toString())) {
+            userRef.child(uid).child("username").setValue(username.getText().toString().split("@")[0]);
+        } else {
+            userRef.child(uid).child("username").setValue(username.getText().toString());
+        }
+        userRef.child(uid).child("admin").setValue(false);
+        userRef.child(uid).child("firstName").setValue(firstName.getText().toString());
+        userRef.child(uid).child("occupiedBeds").setValue(0);
+        userRef.child(uid).child("lastName").setValue(lastName.getText().toString());
+    }
+
+    private boolean isValidEmail(String email) {
+        if (email.split("@").length > 0 && email.split(".").length > 0
+                && email.split("@")[1].length() >= 4
+                && email.split(".")[1].length() == 3) {
+            return true;
+        }
+        return false;
+    }
+
+    // Checks if username is taken
     private boolean isTaken(String un) {
         return false;
     }
+
+    // Checks if both the passwords match
     private boolean matches(String p1, String p2) {
         int counter = 0;
         if (p1.length() != p2.length()) {
@@ -174,52 +215,6 @@ public class Registration extends AppCompatActivity {
         return counter == p1.length();
     }
 
-    public class UserRegistrationTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mEmail;
-        private final String mPassword;
-
-        UserRegistrationTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            authTask = null;
-            showProgress(false);
-            finish();
-        }
-
-        @Override
-        protected void onCancelled() {
-            authTask = null;
-            showProgress(false);
-        }
-    }
     /**
      * Shows the progress UI and hides the login form.
      */
