@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -20,6 +21,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 // Firebase
@@ -49,12 +51,14 @@ public class Registration extends AppCompatActivity {
     private View regView;
     private View progressView;
     private FirebaseAuth fAuth;
+    private RadioButton admin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        admin = (RadioButton) findViewById(R.id.admin);
         setSupportActionBar(toolbar);
         Button regButton = (Button) findViewById(R.id.reg_submit);
         database = FirebaseDatabase.getInstance().getReference();
@@ -145,7 +149,7 @@ public class Registration extends AppCompatActivity {
             // perform the user login attempt.
             System.out.println(un + " " + p1);
             Log.e("Trying", "login");
-            if (isValidEmail(un)) {
+            if (!isValidEmail(un)) {
                 un += "@seekingshelter.com";
             }
             showProgress(true);
@@ -181,14 +185,14 @@ public class Registration extends AppCompatActivity {
         } else {
             userRef.child(uid).child("username").setValue(username.getText().toString());
         }
-        userRef.child(uid).child("admin").setValue(false);
+        userRef.child(uid).child("admin").setValue(admin.isChecked());
         userRef.child(uid).child("firstName").setValue(firstName.getText().toString());
         userRef.child(uid).child("occupiedBeds").setValue(0);
         userRef.child(uid).child("lastName").setValue(lastName.getText().toString());
     }
 
     private boolean isValidEmail(String email) {
-        if (email.split("@").length > 0 && email.split(".").length > 0
+        if (email.split("@").length > 1 && email.split(".").length > 1
                 && email.split("@")[1].length() >= 4
                 && email.split(".")[1].length() == 3) {
             return true;

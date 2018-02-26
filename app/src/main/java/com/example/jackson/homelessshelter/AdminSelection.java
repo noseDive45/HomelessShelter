@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,10 +25,12 @@ public class AdminSelection extends AppCompatActivity {
     DatabaseReference users;
     ListView mListView;
     ArrayList<String> usersList;
+    private FirebaseAuth fAuth;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        fAuth.getInstance().signOut();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_selection);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -45,8 +48,8 @@ public class AdminSelection extends AppCompatActivity {
                     String name = ds.child("username").getValue(String.class);
                     usersList.add(name);
                 }
-                ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, new TextView(), usersList);
-                mListView.setAdapter(adapt);
+//                ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, new TextView(), usersList);
+//                mListView.setAdapter(adapt);
             }
 
             @Override
