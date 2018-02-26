@@ -31,6 +31,10 @@
         <activity
             android:name=".Registration"
             android:label="@string/title_activity_registration"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AdminSelection"
+            android:label="@string/title_activity_admin_selection"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
