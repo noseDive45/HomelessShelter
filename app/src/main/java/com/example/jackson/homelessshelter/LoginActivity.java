@@ -46,6 +46,11 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -58,27 +63,21 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+//    private UserLoginTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private boolean admin;
 
     // Get firebase auth instance
     private FirebaseAuth fAuth;
+    private DatabaseReference database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,9 +89,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         System.out.println("fuck");
         Log.w("Trying", "login");
         fAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance().getReference();
         if (fAuth.getCurrentUser() != null) {
-            Intent next = new Intent(LoginActivity.this, LoggedIn.class);
-            startActivity(next);
+            nextPageSelection();
         }
 
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -171,6 +170,42 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
+    private void nextPageSelection() {
+        database.child("user").child(fAuth.getCurrentUser()
+                .getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                admin = (boolean) dataSnapshot.child("admin").getValue();
+                if (admin) {
+                    Intent next = new Intent(LoginActivity.this, AdminSelection.class);
+                    System.out.println("2");
+                    startActivity(next);
+                } else {
+                    Intent next = new Intent(LoginActivity.this, LoggedIn.class);
+                    System.out.println("3");
+                    startActivity(next);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+//        System.out.println(admin);
+//        System.out.println("1");
+//        if (admin) {
+//            Intent next = new Intent(LoginActivity.this, AdminSelection.class);
+//            System.out.println("2");
+//            startActivity(next);
+//        } else {
+//            Intent next = new Intent(LoginActivity.this, LoggedIn.class);
+//            System.out.println("3");
+//            startActivity(next);
+//        }
+    }
+
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -228,8 +263,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     if (task.isSuccessful()) {
                         FirebaseUser user = fAuth.getCurrentUser();
                         showProgress(false);
-                        Intent next = new Intent(LoginActivity.this, LoggedIn.class);
-                        startActivity(next);
+                        nextPageSelection();
                     } else {
                         try {
                             throw task.getException();
@@ -361,57 +395,57 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+//    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+//
+//        private final String mEmail;
+//        private final String mPassword;
+//
+//        UserLoginTask(String email, String password) {
+//            mEmail = email;
+//            mPassword = password;
+//        }
+//
+//        @Override
+//        protected Boolean doInBackground(Void... params) {
+//            // TODO: attempt authentication against a network service.
+//
+//            try {
+//                // Simulate network access.
+//                Thread.sleep(2000);
+//            } catch (InterruptedException e) {
+//                return false;
+//            }
+//
+//            for (String credential : DUMMY_CREDENTIALS) {
+//                String[] pieces = credential.split(":");
+//                if (pieces[0].equals(mEmail)) {
+//                    // Account exists, return true if the password matches.
+//                    return pieces[1].equals(mPassword);
+//                }
+//            }
+//
+//            // TODO: register the new account here.
+//            return true;
+//        }
 
-        private final String mEmail;
-        private final String mPassword;
-
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
-    }
+//        @Override
+//        protected void onPostExecute(final Boolean success) {
+//            mAuthTask = null;
+//            showProgress(false);
+//
+//            if (success) {
+//                finish();
+//            } else {
+//                mPasswordView.setError(getString(R.string.error_incorrect_password));
+//                mPasswordView.requestFocus();
+//            }
+//        }
+//
+//        @Override
+//        protected void onCancelled() {
+//            mAuthTask = null;
+//            showProgress(false);
+//        }
+//    }
 }
 
