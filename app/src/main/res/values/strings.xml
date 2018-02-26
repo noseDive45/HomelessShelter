@@ -21,4 +21,5 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_registration">Registration</string>
     <string name="title_activity_admin_selection">Admin Selection</string>
+    <string name="title_activity_homless_shelter_details">Homless Shelter Details</string>
 </resources>

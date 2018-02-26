@@ -35,6 +35,10 @@
         <activity
             android:name=".AdminSelection"
             android:label="@string/title_activity_admin_selection"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".HomlessShelterDetails"
+            android:label="@string/title_activity_homless_shelter_details"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
