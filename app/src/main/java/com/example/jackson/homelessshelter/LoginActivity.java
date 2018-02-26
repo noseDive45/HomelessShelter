@@ -256,6 +256,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+            if (!isValidEmail(email)) {
+                email += "@seekingshelter.com";
+            }
             fAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this,
                     new OnCompleteListener<AuthResult>() {
                 @Override
@@ -287,9 +290,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //            startActivity(next);
         }
     }
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.equals("user");
+
+    // Checks if user is logging in with an email or a username
+
+    private boolean isValidEmail(String email) {
+        if (email.split("@").length > 1 && email.split("\\.").length > 1
+                && email.split("@")[1].length() >= 4
+                && email.split("\\.")[1].length() == 3) {
+            return true;
+        }
+        return false;
     }
 
 //    private boolean isPasswordValid(String password) {

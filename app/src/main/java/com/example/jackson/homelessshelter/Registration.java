@@ -153,6 +153,7 @@ public class Registration extends AppCompatActivity {
                 un += "@seekingshelter.com";
             }
             showProgress(true);
+            Log.w("Username", un);
             fAuth.createUserWithEmailAndPassword(un, p1)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -181,9 +182,9 @@ public class Registration extends AppCompatActivity {
         userRef.child(uid);
         userRef.child(uid).child("email").setValue(user.getEmail());
         if (!isValidEmail(username.getText().toString())) {
-            userRef.child(uid).child("username").setValue(username.getText().toString().split("@")[0]);
-        } else {
             userRef.child(uid).child("username").setValue(username.getText().toString());
+        } else {
+            userRef.child(uid).child("username").setValue(username.getText().toString().split("@")[0]);
         }
         userRef.child(uid).child("admin").setValue(admin.isChecked());
         userRef.child(uid).child("firstName").setValue(firstName.getText().toString());
@@ -192,9 +193,9 @@ public class Registration extends AppCompatActivity {
     }
 
     private boolean isValidEmail(String email) {
-        if (email.split("@").length > 1 && email.split(".").length > 1
+        if (email.split("@").length > 1 && email.split("\\.").length > 1
                 && email.split("@")[1].length() >= 4
-                && email.split(".")[1].length() == 3) {
+                && email.split("\\.")[1].length() == 3) {
             return true;
         }
         return false;
