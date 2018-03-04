@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 // Firebase
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -51,14 +52,14 @@ public class Registration extends AppCompatActivity {
     private View regView;
     private View progressView;
     private FirebaseAuth fAuth;
-    private RadioButton admin;
+    private ToggleButton admin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        admin = (RadioButton) findViewById(R.id.admin);
+        admin = (ToggleButton) findViewById(R.id.admin);
         setSupportActionBar(toolbar);
         Button regButton = (Button) findViewById(R.id.reg_submit);
         database = FirebaseDatabase.getInstance().getReference();

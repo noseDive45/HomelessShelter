@@ -81,7 +81,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        CsvUploader.main(null);
+        DatabaseReference shelterRef;
+        String line = "";
+        database = FirebaseDatabase.getInstance().getReference();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
@@ -176,7 +178,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 .getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                admin = (boolean) dataSnapshot.child("admin").getValue();
+//                admin = (boolean) dataSnapshot.child("admin").getValue();
                 if (admin) {
                     Intent next = new Intent(LoginActivity.this, AdminSelection.class);
                     System.out.println("2");
@@ -458,5 +460,149 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //            showProgress(false);
 //        }
 //    }
+
+    // Manual upload of shelters (f that)
+
+//        shelterRef = database.child("shelter");
+//        shelterRef.child("0");
+//        shelterRef.child("0").child("name").setValue("My Sister's House");
+//        shelterRef.child("0").child("roomType").setValue("single");
+//        shelterRef.child("0").child("capacity").setValue(264);
+//        shelterRef.child("0").child("restrictions").setValue("Women,Children");
+//        shelterRef.child("0").child("longitude").setValue(-84.410142);
+//        shelterRef.child("0").child("latitude").setValue(33.780174);
+//        shelterRef.child("0").child("address").setValue("921 Howell Mill Road, Atlanta, Georgia 30318");
+//        shelterRef.child("0").child("special").setValue("Temporary,Emergency,Residential Recovery");
+//        shelterRef.child("0").child("phone").setValue("(404)367-2465");
+//        shelterRef.child("1");
+//        shelterRef.child("1").child("name").setValue("The Atlanta Day Center for Women & Children");
+//        shelterRef.child("1").child("roomType").setValue("single");
+//        shelterRef.child("1").child("capacity").setValue(140);
+//        shelterRef.child("1").child("restrictions").setValue("Women,Children");
+//        shelterRef.child("1").child("longitude").setValue(-84.408771);
+//        shelterRef.child("1").child("latitude").setValue(33.784889);
+//        shelterRef.child("1").child("address").setValue("655 Ethel Street, Atlanta, Georgia 30318");
+//        shelterRef.child("1").child("special").setValue("Career Facilitation");
+//        shelterRef.child("1").child("phone").setValue("(404)588-4007");
+//        shelterRef.child("2");
+//        shelterRef.child("2").child("name").setValue("The Shepherd's Inn");
+//        shelterRef.child("2").child("roomType").setValue("single");
+//        shelterRef.child("2").child("capacity").setValue(450);
+//        shelterRef.child("2").child("restrictions").setValue("Men");
+//        shelterRef.child("2").child("longitude").setValue(-84.39265);
+//        shelterRef.child("2").child("latitude").setValue(33.765162);
+//        shelterRef.child("2").child("address").setValue("156 Mills Street, Atlanta, Georgia 30313");
+//        shelterRef.child("2").child("special").setValue("Temporary,Residential Recovery");
+//        shelterRef.child("2").child("phone").setValue("(404)367-2493");
+//        shelterRef.child("3");
+//        shelterRef.child("3").child("name").setValue("Fuqua Hall");
+//        shelterRef.child("3").child("roomType").setValue("single");
+//        shelterRef.child("3").child("capacity").setValue(92);
+//        shelterRef.child("3").child("restrictions").setValue("Men");
+//        shelterRef.child("3").child("longitude").setValue(-84.392273);
+//        shelterRef.child("3").child("latitude").setValue(33.76515);
+//        shelterRef.child("3").child("address").setValue("144 Mills Street, Atlanta, Georgia 30313");
+//        shelterRef.child("3").child("special").setValue("Transitional Housing");
+//        shelterRef.child("3").child("phone").setValue("(404)367-2492");
+//        shelterRef.child("4");
+//        shelterRef.child("4").child("name").setValue("Atlanta's Children Center");
+//        shelterRef.child("4").child("roomType").setValue("single");
+//        shelterRef.child("4").child("capacity").setValue(40);
+//        shelterRef.child("4").child("restrictions").setValue("Families w/ Children under 5");
+//        shelterRef.child("4").child("longitude").setValue(-84.384433);
+//        shelterRef.child("4").child("latitude").setValue(33.770949);
+//        shelterRef.child("4").child("address").setValue("607 Peachtree Street NE Atlanta, GA 30308");
+//        shelterRef.child("4").child("special").setValue("Children's Programs,Early Childhood Education");
+//        shelterRef.child("4").child("phone").setValue("(404)892-3713");
+//        shelterRef.child("5.0");
+//        shelterRef.child("5.0").child("name").setValue("Eden Village - Families");
+//        shelterRef.child("5.0").child("roomType").setValue("family");
+//        shelterRef.child("5.0").child("capacity").setValue(32);
+//        shelterRef.child("5.0").child("restrictions").setValue("Women & Children");
+//        shelterRef.child("5.0").child("longitude").setValue(-84.43023);
+//        shelterRef.child("5.0").child("latitude").setValue(33.762316);
+//        shelterRef.child("5.0").child("address").setValue("1300 Joseph E. Boone Blvd NW, Atlanta, GA 30314");
+//        shelterRef.child("5.0").child("special").setValue("General Recovery Services");
+//        shelterRef.child("5.0").child("phone").setValue("(404)874-2241");
+//        shelterRef.child("5.1");
+//        shelterRef.child("5.1").child("name").setValue("Eden Village - Singles");
+//        shelterRef.child("5.1").child("roomType").setValue("single");
+//        shelterRef.child("5.1").child("capacity").setValue(80);
+//        shelterRef.child("5.1").child("restrictions").setValue("Women,Children");
+//        shelterRef.child("5.1").child("longitude").setValue(-84.43023);
+//        shelterRef.child("5.1").child("latitude").setValue(33.762316);
+//        shelterRef.child("5.1").child("address").setValue("1300 Joseph E. Boone Blvd NW, Atlanta, GA 30314");
+//        shelterRef.child("5.1").child("special").setValue("General Recovery Services");
+//        shelterRef.child("5.1").child("phone").setValue("(404)874-2241");
+//        shelterRef.child("6");
+//        shelterRef.child("6").child("name").setValue("Our House");
+//        shelterRef.child("6").child("roomType").setValue("family");
+//        shelterRef.child("6").child("capacity").setValue(76);
+//        shelterRef.child("6").child("restrictions").setValue("Families w/ Newborns");
+//        shelterRef.child("6").child("longitude").setValue(-84.371706);
+//        shelterRef.child("6").child("latitude").setValue(33.759138);
+//        shelterRef.child("6").child("address").setValue("173 Boulevard Northeast, Atlanta, GA 30312");
+//        shelterRef.child("6").child("special").setValue("Families w/ Newborns,Pre-K Education");
+//        shelterRef.child("6").child("phone").setValue("(404)522-6056");
+//        shelterRef.child("7");
+//        shelterRef.child("7").child("name").setValue("Covenant House Georgia");
+//        shelterRef.child("7").child("roomType").setValue("single");
+//        shelterRef.child("7").child("capacity").setValue(80);
+//        shelterRef.child("7").child("restrictions").setValue("Children,Young Adults");
+//        shelterRef.child("7").child("longitude").setValue(-84.437988);
+//        shelterRef.child("7").child("latitude").setValue(33.78823);
+//        shelterRef.child("7").child("address").setValue("1559 Johnson Road NW, Atlanta, GA 30318");
+//        shelterRef.child("7").child("special").setValue("Crisis Services,Career Preparation");
+//        shelterRef.child("7").child("phone").setValue("(404)937-6957");
+//        shelterRef.child("8");
+//        shelterRef.child("8").child("name").setValue("Nicholas House");
+//        shelterRef.child("8").child("roomType").setValue("n/a");
+//        shelterRef.child("8").child("capacity").setValue(0);
+//        shelterRef.child("8").child("restrictions").setValue("Families");
+//        shelterRef.child("8").child("longitude").setValue(-84.367953);
+//        shelterRef.child("8").child("latitude").setValue(33.731823);
+//        shelterRef.child("8").child("address").setValue("830 Boulevard SE, Atlanta, GA 30312");
+//        shelterRef.child("8").child("special").setValue("Family Services");
+//        shelterRef.child("8").child("phone").setValue("(404)9622-0793");
+//        shelterRef.child("9");
+//        shelterRef.child("9").child("name").setValue("Hope Atlanta");
+//        shelterRef.child("9").child("roomType").setValue("apartment");
+//        shelterRef.child("9").child("capacity").setValue(22);
+//        shelterRef.child("9").child("restrictions").setValue("Anyone");
+//        shelterRef.child("9").child("longitude").setValue(-84.390429);
+//        shelterRef.child("9").child("latitude").setValue(33.753594);
+//        shelterRef.child("9").child("address").setValue("34 Peachtree Street NW, Suite 700, Atlanta, GA 30303");
+//        shelterRef.child("9").child("special").setValue("Emergency Shelter");
+//        shelterRef.child("9").child("phone").setValue("(404)817-7070");
+//        shelterRef.child("10");
+//        shelterRef.child("10").child("name").setValue("Gateway Center");
+//        shelterRef.child("10").child("roomType").setValue("single");
+//        shelterRef.child("10").child("capacity").setValue(330);
+//        shelterRef.child("10").child("restrictions").setValue("Men");
+//        shelterRef.child("10").child("longitude").setValue(-84.394529);
+//        shelterRef.child("10").child("latitude").setValue(33.747618);
+//        shelterRef.child("10").child("address").setValue("275 Pryor St. SW, Atlanta, GA 30303");
+//        shelterRef.child("10").child("special").setValue("Shelter and recovery services");
+//        shelterRef.child("10").child("phone").setValue("(404)215-6600");
+//        shelterRef.child("11");
+//        shelterRef.child("11").child("name").setValue("Young Adult Guidance Center");
+//        shelterRef.child("11").child("roomType").setValue("single");
+//        shelterRef.child("11").child("capacity").setValue(12);
+//        shelterRef.child("11").child("restrictions").setValue("Young Adults");
+//        shelterRef.child("11").child("longitude").setValue(-84.470567);
+//        shelterRef.child("11").child("latitude").setValue(33.789157);
+//        shelterRef.child("11").child("address").setValue("1230 Hightower Road NW Atlanta, GA 30318");
+//        shelterRef.child("11").child("special").setValue("Emergency,Independent living,Restoration");
+//        shelterRef.child("11").child("phone").setValue("(404)792-7616");
+//        shelterRef.child("12");
+//        shelterRef.child("12").child("name").setValue("Homes of Light");
+//        shelterRef.child("12").child("roomType").setValue("n/a");
+//        shelterRef.child("12").child("capacity").setValue(0);
+//        shelterRef.child("12").child("restrictions").setValue("Veterans");
+//        shelterRef.child("12").child("longitude").setValue(-84.328691);
+//        shelterRef.child("12").child("latitude").setValue(33.747641);
+//        shelterRef.child("12").child("address").setValue("1800 Memorial Dr SE G3, Atlanta, GA 30317");
+//        shelterRef.child("12").child("special").setValue("Veterans");
+//        shelterRef.child("12").child("phone").setValue("(844)289-8382");
 }
 

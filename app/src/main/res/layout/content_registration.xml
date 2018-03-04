@@ -108,7 +108,14 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <RadioButton
+        <TextView
+            android:id="@+id/adminText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Admin?" />
+
+        <ToggleButton
             android:id="@+id/admin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
