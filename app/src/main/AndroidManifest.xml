@@ -41,6 +41,7 @@
             android:label="@string/title_activity_homless_shelter_details"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ListOfShelters"></activity>
+        <activity android:name=".Pop" android:theme="@style/AppTheme.SeeBackground"></activity>
     </application>
 
 </manifest>

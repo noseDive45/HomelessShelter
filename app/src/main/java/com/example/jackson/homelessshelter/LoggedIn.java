@@ -83,8 +83,9 @@ public class LoggedIn extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
+        } else if (id == R.id.shelters) {
+            Intent viewList = new Intent(LoggedIn.this, ListOfShelters.class);
+            startActivity(viewList);
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {

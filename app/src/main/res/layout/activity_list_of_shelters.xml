@@ -6,4 +6,15 @@
     android:layout_height="match_parent"
     tools:context="com.example.jackson.homelessshelter.ListOfShelters">
 
+    <LinearLayout
+        android:id="@+id/lin"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>
