@@ -27,10 +27,6 @@
             android:label="@string/title_activity_registration"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".AdminSelection"
-            android:label="@string/title_activity_admin_selection"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".HomlessShelterDetails"
             android:label="@string/title_activity_homless_shelter_details"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -38,15 +34,6 @@
         <activity
             android:name=".Pop"
             android:theme="@style/AppTheme.SeeBackground" />
-        <activity
-            android:name=".Launcher"
-            android:label="@string/title_activity_launcher"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity
-            android:name=".asdfasdf"
-            android:label="@string/title_activity_asdfasdf"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Navigation"
             android:label="@string/title_activity_navigation"
