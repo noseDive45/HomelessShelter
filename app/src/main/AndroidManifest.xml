@@ -19,19 +19,6 @@
             android:name=".LoginFragment"
             android:label="@string/app_name" />
         <activity
-            android:name=".LoggedIn"
-            android:label="@string/title_activity_logged_in"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".Registration"
-            android:label="@string/title_activity_registration"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".HomlessShelterDetails"
-            android:label="@string/title_activity_homless_shelter_details"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ListOfShelters" />
-        <activity
             android:name=".Pop"
             android:theme="@style/AppTheme.SeeBackground" />
         <activity
