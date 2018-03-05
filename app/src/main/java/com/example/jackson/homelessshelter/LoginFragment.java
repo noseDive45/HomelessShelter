@@ -3,35 +3,35 @@ package com.example.jackson.homelessshelter;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.app.Fragment;
 
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
@@ -52,12 +51,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import static android.Manifest.permission.READ_CONTACTS;
-
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -74,30 +71,42 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
     private boolean admin;
+    private DrawerLocker lockheed;
 
-    // Get firebase auth instance
+    // Get firebase auth & database instance
     private FirebaseAuth fAuth;
     private DatabaseReference database;
 
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        lockheed.unlocked(false);
+        return inflater.inflate(R.layout.fragment_login, container, false);
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        DatabaseReference shelterRef;
-        String line = "";
-        database = FirebaseDatabase.getInstance().getReference();
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
-        System.out.println("fuck");
-        Log.w("Trying", "login");
-        fAuth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance().getReference();
+    public void onStart() {
+        super.onStart();
+        initialize();
+
+        // See if user already logged in
+
         if (fAuth.getCurrentUser() != null) {
             nextPageSelection();
         }
+    }
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        lockheed = (DrawerLocker) activity;
+    }
 
-        mPasswordView = (EditText) findViewById(R.id.password);
+    // Get initial References
+
+    private void initialize() {
+        mEmailView = (AutoCompleteTextView) getView().findViewById(R.id.email);
+        fAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance().getReference();
+        mPasswordView = (EditText) getView().findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -108,12 +117,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 return false;
             }
         });
-
-        // See if user is already logged in
-
-
-        Button mEmailSignInButton = (Button) findViewById(R.id.log_in);
-        Button registration = (Button) findViewById(R.id.register);
+        Button mEmailSignInButton = (Button) getView().findViewById(R.id.log_in);
+        Button registration = (Button) getView().findViewById(R.id.register);
         registration.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -126,87 +131,92 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 attemptLogin();
             }
         });
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+        mLoginFormView = getView().findViewById(R.id.login_form);
+        mProgressView = getView().findViewById(R.id.login_progress);
     }
 
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
+//    private void populateAutoComplete() {
+//        if (!mayRequestContacts()) {
+//            return;
+//        }
 
-        getLoaderManager().initLoader(0, null, this);
-    }
+//        getLoaderManager().initLoader(0, null, getActivity());
+//    }
 
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
+//    private boolean mayRequestContacts() {
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+//            return true;
+//        }
+//        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+//            return true;
+//        }
+//        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
+//            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+//                    .setAction(android.R.string.ok, new View.OnClickListener() {
+//                        @Override
+//                        @TargetApi(Build.VERSION_CODES.M)
+//                        public void onClick(View v) {
+//                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
+//                        }
+//                    });
+//        } else {
+//            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
+//        }
+//        return false;
+//    }
 
     /**
      * Callback received when a permissions request has been completed.
      */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
-            }
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+//                                           @NonNull int[] grantResults) {
+//        if (requestCode == REQUEST_READ_CONTACTS) {
+//            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                populateAutoComplete();
+//            }
+//        }
+//    }
 
     private void nextPageSelection() {
-        database.child("user").child(fAuth.getCurrentUser()
-                .getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+//        database.child("user").child(fAuth.getCurrentUser()
+//                .getUid()).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
 //                admin = (boolean) dataSnapshot.child("admin").getValue();
-                if (admin) {
-                    Intent next = new Intent(LoginActivity.this, AdminSelection.class);
-                    System.out.println("2");
-                    startActivity(next);
-                } else {
-                    Intent next = new Intent(LoginActivity.this, LoggedIn.class);
-                    System.out.println("3");
-                    startActivity(next);
-                }
-            }
+//                if (admin) {
+//                    Intent next = new Intent(getActivity(), AdminSelection.class);
+//                    System.out.println("2");
+//                    startActivity(next);
+//                } else {
+//                    Intent next = new Intent(getActivity(), LoggedIn.class);
+//                    System.out.println("3");
+//                    startActivity(next);
+//                }
+//            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
 
 //        System.out.println(admin);
 //        System.out.println("1");
 //        if (admin) {
-//            Intent next = new Intent(LoginActivity.this, AdminSelection.class);
+//            Intent next = new Intent(LoginFragment.this, AdminSelection.class);
 //            System.out.println("2");
 //            startActivity(next);
 //        } else {
-//            Intent next = new Intent(LoginActivity.this, LoggedIn.class);
+//            Intent next = new Intent(LoginFragment.this, LoggedIn.class);
 //            System.out.println("3");
 //            startActivity(next);
 //        }
+        android.support.v4.app.Fragment loggedIn = new LoggedInFragment();
+        android.support.v4.app.FragmentManager fm = getFragmentManager();
+        android.support.v4.app.FragmentTransaction trans = fm.beginTransaction();
+        trans.replace(R.id.frag_container, loggedIn);
+        trans.commit();
     }
 
 
@@ -262,7 +272,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             if (!isValidEmail(email)) {
                 email += "@seekingshelter.com";
             }
-            fAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this,
+            fAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(getActivity(),
                     new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -289,7 +299,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
             });
 //            mAuthTask = new UserLoginTask(email, password);
-//            Intent next = new Intent(LoginActivity.this, LoggedIn.class);
+//            Intent next = new Intent(LoginFragment.this, LoggedIn.class);
 //            startActivity(next);
         }
     }
@@ -305,13 +315,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         return false;
     }
 
-//    private boolean isPasswordValid(String password) {
-//        //TODO: Replace this with your own logic
-//        return password.equals("pass");
-//    }
     public void register() {
-        Intent regScreen = new Intent(LoginActivity.this, Registration.class);
-        startActivity(regScreen);
+        android.support.v4.app.Fragment reg = new RegistrationFragment();
+        android.support.v4.app.FragmentManager fm = getFragmentManager();
+        android.support.v4.app.FragmentTransaction trans = fm.beginTransaction();
+        trans.replace(R.id.frag_container, reg);
+        trans.commit();
+//        Intent regScreen = new Intent(getActivity(), Registration.class);
+//        startActivity(regScreen);
     }
 
     /**
@@ -352,7 +363,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
+        return new CursorLoader(getActivity(),
                 // Retrieve data rows for the device user's 'profile' contact.
                 Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
                         ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
@@ -398,7 +409,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity.this,
+                new ArrayAdapter<>(getActivity(),
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);

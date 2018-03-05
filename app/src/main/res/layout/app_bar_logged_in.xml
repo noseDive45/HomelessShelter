@@ -6,20 +6,25 @@
     android:layout_height="match_parent"
     tools:context="com.example.jackson.homelessshelter.LoggedIn">
 
-    <android.support.design.widget.AppBarLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="#1B5E20"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="#1B5E20"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    </android.support.design.widget.AppBarLayout>
+            <FrameLayout
+                android:id="@+id/frag_container"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent">
 
-    <include layout="@layout/content_logged_in" />
+            </FrameLayout>
+
+    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

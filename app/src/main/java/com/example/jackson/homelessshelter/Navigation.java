@@ -1,7 +1,9 @@
 package com.example.jackson.homelessshelter;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -13,20 +15,25 @@ import android.view.MenuItem;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-public class LoggedIn extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class Navigation extends AppCompatActivity
+        implements DrawerLocker, NavigationView.OnNavigationItemSelectedListener {
 
-    private LoggedIn loggedIn;
+    private DrawerLayout drawer;
     private FirebaseAuth fAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_logged_in);
-
+        setContentView(R.layout.activity_navigation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        android.support.v4.app.Fragment login = new LoginFragment();
+        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+        android.support.v4.app.FragmentTransaction trans = fm.beginTransaction();
+        trans.replace(R.id.frag_container, login);
+        trans.commit();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -36,22 +43,28 @@ public class LoggedIn extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    public void unlocked(boolean enable) {
+        if (enable) {
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        } else {
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            Intent previous = new Intent(LoggedIn.this, LoginFragment.class);
-            finish();
-            startActivity(previous);
+            super.onBackPressed();
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.logged_in, menu);
+        getMenuInflater().inflate(R.menu.navigation, menu);
         return true;
     }
 
@@ -78,20 +91,21 @@ public class LoggedIn extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
         } else if (id == R.id.shelters) {
-            Intent viewList = new Intent(LoggedIn.this, ListOfShelters.class);
-            startActivity(viewList);
-        } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.log_out) {
-            Intent previous = new Intent(LoggedIn.this, LoginFragment.class);
             fAuth.getInstance().signOut();
-            finish();
-            startActivity(previous);
+            android.support.v4.app.Fragment login = new LoginFragment();
+            android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+            android.support.v4.app.FragmentTransaction trans = fm.beginTransaction();
+            trans.replace(R.id.frag_container, login);
+            trans.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
