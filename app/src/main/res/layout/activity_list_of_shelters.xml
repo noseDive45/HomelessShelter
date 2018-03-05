@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.jackson.homelessshelter.ListOfShelters">
+    tools:context="com.example.jackson.homelessshelter.SheltersFragment">
 
     <LinearLayout
-        android:id="@+id/lin"
+        android:id="@+id/linlayShelter"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
