@@ -187,7 +187,7 @@ public class RegistrationFragment extends Fragment {
             showProgress(true);
             Log.w("Username", un);
             fAuth.createUserWithEmailAndPassword(un, p1)
-                    .addOnCompleteListener((Executor) this, new OnCompleteListener<AuthResult>() {
+                    .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {

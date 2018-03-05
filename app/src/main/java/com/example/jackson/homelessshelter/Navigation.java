@@ -89,11 +89,19 @@ public class Navigation extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
+        if (id == R.id.home) {
+            android.support.v4.app.Fragment loggedIn = new LoggedInFragment();
+            android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+            android.support.v4.app.FragmentTransaction trans = fm.beginTransaction();
+            trans.replace(R.id.frag_container, loggedIn);
+            trans.commit();
         } else if (id == R.id.shelters) {
+            android.support.v4.app.Fragment shelters = new SheltersFragment();
+            android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+            android.support.v4.app.FragmentTransaction trans = fm.beginTransaction();
+            trans.replace(R.id.frag_container, shelters);
+            trans.commit();
+        } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
 
