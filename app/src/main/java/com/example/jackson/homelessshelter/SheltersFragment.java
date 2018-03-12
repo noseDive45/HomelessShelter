@@ -14,9 +14,12 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.firebase.database.ChildEventListener;
@@ -41,7 +44,8 @@ public class SheltersFragment extends Fragment {
     private ArrayList<String> list;
     private ListView listView;
     private DrawerLocker lockheed;
-    private PopupWindow popup;
+    private PopupWindow shelterPopup;
+    private PopupWindow filterPopup;
     private LayoutInflater layoutInflater;
     private float longitude;
     private float latitude;
@@ -61,6 +65,11 @@ public class SheltersFragment extends Fragment {
     private TextView genderView;
     private TextView longitudeView;
     private TextView latitudeView;
+    private Spinner genderSpinner;
+    private Spinner ageSpinner;
+    private EditText searchCriteria;
+    private Button submitFilter;
+    private ArrayList<Shelter> baseList;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -82,81 +91,39 @@ public class SheltersFragment extends Fragment {
     // Initialize references and populate list
 
     private void initialize() {
+        lin = (LinearLayout) getActivity().findViewById(R.id.linlayShelter);
         list = new ArrayList<String>();
-        adapt = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list);
-        listView= getActivity().findViewById(R.id.listView);
+        adapt = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
+        baseList = new ArrayList<Shelter>();
+        listView = getActivity().findViewById(R.id.listView);
         // Allow list items to be selected
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-
-                // ListView Clicked item index
-                int itemPosition     = position;
-
                 // ListView Clicked item value
                 String  itemValue    = (String) listView.getItemAtPosition(position);
-
-                DatabaseReference shelters = FirebaseDatabase.getInstance().getReference("shelter");
-                Query query = shelters.orderByChild("name").equalTo(itemValue);
-                System.out.println("hey");
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            for (DataSnapshot snap : dataSnapshot.getChildren()) {
-                                System.out.println(snap.getValue());
-                                System.out.println(snap.child("name").getValue(String.class));
-                                name = snap.child("name").getValue(String.class);
-                                special = snap.child("special").getValue(String.class);
-                                address = snap.child("address").getValue(String.class);
-                                restrictions = snap.child("restrictions").getValue(String.class);
-                                phone = snap.child("phone").getValue(String.class);
-                                capacity = snap.child("capacity").getValue(Float.class);
-                                latitude = snap.child("latitude").getValue(Float.class);
-                                longitude = snap.child("longitude").getValue(Float.class);
-                                gender = snap.child("restrictions").getValue(String.class);
-                            }
-                            System.out.println("recorded");
-                            layoutInflater = (LayoutInflater) getActivity().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-                            ViewGroup container = (ViewGroup) layoutInflater.inflate(R.layout.popwindow, null);
-                            lin = (LinearLayout) getActivity().findViewById(R.id.linlayShelter);
-                            popup = new PopupWindow(container, (int) Math.round(lin.getWidth() * .7), (int) Math.round(lin.getHeight() * .8), true);
-                            nameView = popup.getContentView().findViewById(R.id.name);
-                            addressView = popup.getContentView().findViewById(R.id.address);
-                            phoneView = popup.getContentView().findViewById(R.id.phone);
-                            capacityView = popup.getContentView().findViewById(R.id.capacity);
-                            longitudeView = popup.getContentView().findViewById(R.id.longitude);
-                            latitudeView = popup.getContentView().findViewById(R.id.latitude);
-                            genderView = popup.getContentView().findViewById(R.id.genders);
-                            nameView.setText(name);
-                            addressView.setText(address);
-                            phoneView.setText(phone);
-                            capacityView.setText(String.valueOf(capacity));
-                            longitudeView.setText(Objects.toString(longitude));
-                            latitudeView.setText(String.format("%f", latitude));
-                            genderView.setText(gender);
-                            popup.showAtLocation(getActivity().findViewById(R.id.linlayShelter), Gravity.CENTER, 0, 0);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
+                giveDetails(itemValue);
             }
-
         });
-        listView.setAdapter(adapt);
         database = FirebaseDatabase.getInstance().getReference();
         shelters = database.child("shelter");
         // Populate list with shelter names
         shelters.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Shelter addMe = new Shelter("useless",
+                        dataSnapshot.child("name").getValue(String.class),
+                        dataSnapshot.child("capacity").getValue(Integer.class),
+                        dataSnapshot.child("restrictions").getValue(String.class),
+                        dataSnapshot.child("longitude").getValue(Double.class),
+                        dataSnapshot.child("latitude").getValue(Double.class),
+                        dataSnapshot.child("address").getValue(String.class),
+                        dataSnapshot.child("special").getValue(String.class),
+                        dataSnapshot.child("phone").getValue(String.class));
+
+                baseList.add(addMe);
                 list.add(dataSnapshot.child("name").getValue(String.class));
                 adapt.notifyDataSetChanged();
             }
@@ -165,7 +132,7 @@ public class SheltersFragment extends Fragment {
             }
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                list.remove(dataSnapshot.getValue(String.class));
+                baseList.remove(dataSnapshot.getValue(String.class));
                 adapt.notifyDataSetChanged();
             }
             @Override
@@ -175,5 +142,106 @@ public class SheltersFragment extends Fragment {
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+        listView.setAdapter(adapt);
+        Button filtering = (Button) getView().findViewById(R.id.filter);
+        filtering.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createFilterPopupWindow();
+            }
+        });
+    }
+
+    // Create window showing filterable criteria with spinners for selection
+
+    private void createFilterPopupWindow() {
+        layoutInflater = (LayoutInflater) getActivity().getApplicationContext()
+                .getSystemService(LAYOUT_INFLATER_SERVICE);
+        ViewGroup container = (ViewGroup) layoutInflater.inflate(R.layout.filter, null);
+        lin = (LinearLayout) getActivity().findViewById(R.id.linlayShelter);
+        filterPopup = new PopupWindow(container, (int) Math.round(lin.getWidth() * .7),
+                (int) Math.round(lin.getHeight() * .8), true);
+        genderSpinner = (Spinner) getActivity().findViewById(R.id.genderSpinner);
+        ageSpinner = (Spinner) getActivity().findViewById(R.id.ageSpinner);
+        searchCriteria = (EditText) getActivity().findViewById(R.id.searchContent);
+        submitFilter = (Button) getActivity().findViewById(R.id.submitFilter);
+        filterPopup.showAtLocation(getActivity().findViewById(R.id.linlayShelter),
+                Gravity.CENTER, 0, 0);
+//        submitFilter.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                filter();
+//            }
+//        });
+    }
+
+    private void generateList() {
+        System.out.println("legend" + baseList);
+        for (Shelter shelts : baseList) {
+            list.add(shelts.getName());
+        }
+        adapt.notifyDataSetChanged();
+    }
+
+    // Create popup window with shelter details
+
+    private void giveDetails(String itemValue) {
+        DatabaseReference shelters = FirebaseDatabase.getInstance().getReference("shelter");
+        Query query = shelters.orderByChild("name").equalTo(itemValue);
+        System.out.println("hey");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snap : dataSnapshot.getChildren()) {
+                        System.out.println(snap.getValue());
+                        System.out.println(snap.child("name").getValue(String.class));
+                        name = snap.child("name").getValue(String.class);
+                        special = snap.child("special").getValue(String.class);
+                        address = snap.child("address").getValue(String.class);
+                        restrictions = snap.child("restrictions").getValue(String.class);
+                        phone = snap.child("phone").getValue(String.class);
+                        capacity = snap.child("capacity").getValue(Float.class);
+                        latitude = snap.child("latitude").getValue(Float.class);
+                        longitude = snap.child("longitude").getValue(Float.class);
+                        gender = snap.child("restrictions").getValue(String.class);
+                    }
+                    System.out.println("recorded");
+                    // Create shelter details popup window
+                    layoutInflater = (LayoutInflater) getActivity().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                    ViewGroup container = (ViewGroup) layoutInflater.inflate(R.layout.popwindow, null);
+                    shelterPopup = new PopupWindow(container, (int) Math.round(lin.getWidth() * .7), (int) Math.round(lin.getHeight() * .8), true);
+                    nameView = shelterPopup.getContentView().findViewById(R.id.name);
+                    addressView = shelterPopup.getContentView().findViewById(R.id.address);
+                    phoneView = shelterPopup.getContentView().findViewById(R.id.phone);
+                    capacityView = shelterPopup.getContentView().findViewById(R.id.capacity);
+                    longitudeView = shelterPopup.getContentView().findViewById(R.id.longitude);
+                    latitudeView = shelterPopup.getContentView().findViewById(R.id.latitude);
+                    genderView = shelterPopup.getContentView().findViewById(R.id.genders);
+                    nameView.setText(name);
+                    addressView.setText(address);
+                    phoneView.setText(phone);
+                    capacityView.setText(String.valueOf(capacity));
+                    longitudeView.setText(Objects.toString(longitude));
+                    latitudeView.setText(String.format("%f", latitude));
+                    genderView.setText(gender);
+                    shelterPopup.showAtLocation(getActivity().findViewById(R.id.linlayShelter), Gravity.CENTER, 0, 0);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    // Use filter popup window selected criteria to filter the listview
+
+    private void filter() {
+        String ageFilt = ageSpinner.getSelectedItem().toString();
+        String genderFilt = genderSpinner.getSelectedItem().toString();
+        String searchBy = searchCriteria.getText().toString();
+        list.clear();
     }
 }

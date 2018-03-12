@@ -12,6 +12,12 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <Button
+            android:id="@+id/filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Filter" />
+
         <ListView
             android:id="@+id/listView"
             android:layout_width="match_parent"

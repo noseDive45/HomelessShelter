@@ -28,4 +28,22 @@
     <string name="title_activity_launcher">Launcher</string>
     <string name="title_activity_asdfasdf">asdfasdf</string>
     <string name="title_activity_navigation">Navigation</string>
+
+    <string name="gender_prompt">Choose one</string>
+
+    <string-array name="genders">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
+    <string name="age_prompt">Choose one</string>
+
+    <string-array name="ages">
+        <item>Families w/ Newborns</item>
+        <item>Young Adults</item>
+        <item>Adults</item>
+        <item>Anyone</item>
+        <item>Veterans</item>
+    </string-array>
+
 </resources>
