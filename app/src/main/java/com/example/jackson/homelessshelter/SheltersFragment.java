@@ -161,10 +161,7 @@ public class SheltersFragment extends Fragment {
         lin = (LinearLayout) getActivity().findViewById(R.id.linlayShelter);
         filterPopup = new PopupWindow(container, (int) Math.round(lin.getWidth() * .7),
                 (int) Math.round(lin.getHeight() * .8), true);
-        genderSpinner = (Spinner) getActivity().findViewById(R.id.genderSpinner);
-        ageSpinner = (Spinner) getActivity().findViewById(R.id.ageSpinner);
-        searchCriteria = (EditText) getActivity().findViewById(R.id.searchContent);
-        submitFilter = (Button) getActivity().findViewById(R.id.submitFilter);
+        View pview = layoutInflater.inflate(R.layout.filter, container);
         filterPopup.showAtLocation(getActivity().findViewById(R.id.linlayShelter),
                 Gravity.CENTER, 0, 0);
 //        submitFilter.setOnClickListener(new View.OnClickListener() {
@@ -173,6 +170,10 @@ public class SheltersFragment extends Fragment {
 //                filter();
 //            }
 //        });
+        genderSpinner = (Spinner) pview.findViewById(R.id.genderSpinner);
+        ageSpinner = (Spinner) pview.findViewById(R.id.ageSpinner);
+        searchCriteria = (EditText) pview.findViewById(R.id.searchContent);
+        submitFilter = (Button) pview.findViewById(R.id.submitFilter);
     }
 
     private void generateList() {
