@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -32,6 +35,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Objects;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
@@ -60,7 +64,7 @@ public class SheltersFragment extends Fragment {
     private TextView nameView;
     private TextView addressView;
     private TextView phoneView;
-    private LinearLayout lin;
+    private ConstraintLayout lin;
     private TextView capacityView;
     private TextView genderView;
     private TextView longitudeView;
@@ -70,6 +74,7 @@ public class SheltersFragment extends Fragment {
     private EditText searchCriteria;
     private Button submitFilter;
     private ArrayList<Shelter> baseList;
+    private String lastSearch;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -91,11 +96,12 @@ public class SheltersFragment extends Fragment {
     // Initialize references and populate list
 
     private void initialize() {
-        lin = (LinearLayout) getActivity().findViewById(R.id.linlayShelter);
+        lin = (ConstraintLayout) getActivity().findViewById(R.id.mainViewShelter);
         list = new ArrayList<String>();
         adapt = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
         baseList = new ArrayList<Shelter>();
         listView = getActivity().findViewById(R.id.listView);
+        listView.setAdapter(adapt);
         // Allow list items to be selected
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -122,7 +128,6 @@ public class SheltersFragment extends Fragment {
                         dataSnapshot.child("address").getValue(String.class),
                         dataSnapshot.child("special").getValue(String.class),
                         dataSnapshot.child("phone").getValue(String.class));
-
                 baseList.add(addMe);
                 list.add(dataSnapshot.child("name").getValue(String.class));
                 adapt.notifyDataSetChanged();
@@ -142,46 +147,108 @@ public class SheltersFragment extends Fragment {
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-        listView.setAdapter(adapt);
-        Button filtering = (Button) getView().findViewById(R.id.filter);
-        filtering.setOnClickListener(new View.OnClickListener() {
+        ageSpinner = (Spinner) getActivity().findViewById(R.id.ageSpinner);
+        genderSpinner = (Spinner) getActivity().findViewById(R.id.genderSpinner);
+        searchCriteria = (EditText) getActivity().findViewById(R.id.searchContent);
+        lastSearch = "";
+        searchCriteria.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View view) {
-                createFilterPopupWindow();
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                generateList(ageSpinner.getSelectedItem().toString(),
+                        genderSpinner.getSelectedItem().toString(),
+                        charSequence);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        genderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                generateList(ageSpinner.getSelectedItem().toString(),
+                        genderSpinner.getSelectedItem().toString(),
+                        searchCriteria.getText().toString());
+            }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                    return;
+                }
+        });
+        ageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                generateList(ageSpinner.getSelectedItem().toString(),
+                        genderSpinner.getSelectedItem().toString(),
+                        searchCriteria.getText().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                return;
             }
         });
     }
 
-    // Create window showing filterable criteria with spinners for selection
-
-    private void createFilterPopupWindow() {
-        layoutInflater = (LayoutInflater) getActivity().getApplicationContext()
-                .getSystemService(LAYOUT_INFLATER_SERVICE);
-        ViewGroup container = (ViewGroup) layoutInflater.inflate(R.layout.filter, null);
-        lin = (LinearLayout) getActivity().findViewById(R.id.linlayShelter);
-        filterPopup = new PopupWindow(container, (int) Math.round(lin.getWidth() * .7),
-                (int) Math.round(lin.getHeight() * .8), true);
-        View pview = layoutInflater.inflate(R.layout.filter, container);
-        filterPopup.showAtLocation(getActivity().findViewById(R.id.linlayShelter),
-                Gravity.CENTER, 0, 0);
-//        submitFilter.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                filter();
-//            }
-//        });
-        genderSpinner = (Spinner) pview.findViewById(R.id.genderSpinner);
-        ageSpinner = (Spinner) pview.findViewById(R.id.ageSpinner);
-        searchCriteria = (EditText) pview.findViewById(R.id.searchContent);
-        submitFilter = (Button) pview.findViewById(R.id.submitFilter);
-    }
-
-    private void generateList() {
-        System.out.println("legend" + baseList);
+    private void generateList(String ageFilt, String gendFilt, CharSequence search) {
+        list.clear();
         for (Shelter shelts : baseList) {
             list.add(shelts.getName());
         }
+        if (!Objects.equals(gendFilt, "Both")) {
+            for (Shelter shelts : baseList) {
+                boolean confirmed = false;
+                String checking = shelts.getRestrictions();
+                while (checking.split(",").length > 1 && !confirmed) {
+                    if (Objects.equals(checking.split(",")[0], gendFilt)) {
+                        confirmed = true;
+                    }
+                    checking = checking.split(",")[1];
+                }
+                if (Objects.equals(checking, gendFilt) || confirmed) {
+                } else {
+                    list.remove(shelts.getName());
+                }
+            }
+        }
+        if (!Objects.equals(ageFilt, "Anyone")) {
+            for (Shelter shelts : baseList) {
+                boolean confirmed = false;
+                String checking = shelts.getRestrictions();
+                while (checking.split(",").length > 1 && !confirmed) {
+                    if (Objects.equals(checking.split(",")[0], ageFilt)) {
+                        confirmed = true;
+                    }
+                    checking = checking.split(",")[1];
+                }
+                System.out.println("confirmed?" + confirmed);
+                if (Objects.equals(checking, ageFilt) || confirmed) {
+                } else {
+                    list.remove(shelts.getName());
+                }
+            }
+        }
+        System.out.println("swap");
+        System.out.println(!Objects.equals(lastSearch, search.toString()));
+        System.out.println(!lastSearch.equals(search.toString()));
+        if (search.length() != 0) {
+            ArrayList<String> legend = new ArrayList<>();
+            for (String name : list) {
+                if (!name.toLowerCase().contains(search.toString().toLowerCase())) {
+                    legend.add(name);
+                }
+            }
+            list.removeAll(legend);
+        }
         adapt.notifyDataSetChanged();
+        lastSearch = search.toString();
     }
 
     // Create popup window with shelter details
@@ -189,14 +256,11 @@ public class SheltersFragment extends Fragment {
     private void giveDetails(String itemValue) {
         DatabaseReference shelters = FirebaseDatabase.getInstance().getReference("shelter");
         Query query = shelters.orderByChild("name").equalTo(itemValue);
-        System.out.println("hey");
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot snap : dataSnapshot.getChildren()) {
-                        System.out.println(snap.getValue());
-                        System.out.println(snap.child("name").getValue(String.class));
                         name = snap.child("name").getValue(String.class);
                         special = snap.child("special").getValue(String.class);
                         address = snap.child("address").getValue(String.class);
@@ -207,7 +271,6 @@ public class SheltersFragment extends Fragment {
                         longitude = snap.child("longitude").getValue(Float.class);
                         gender = snap.child("restrictions").getValue(String.class);
                     }
-                    System.out.println("recorded");
                     // Create shelter details popup window
                     layoutInflater = (LayoutInflater) getActivity().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
                     ViewGroup container = (ViewGroup) layoutInflater.inflate(R.layout.popwindow, null);
@@ -237,12 +300,4 @@ public class SheltersFragment extends Fragment {
         });
     }
 
-    // Use filter popup window selected criteria to filter the listview
-
-    private void filter() {
-        String ageFilt = ageSpinner.getSelectedItem().toString();
-        String genderFilt = genderSpinner.getSelectedItem().toString();
-        String searchBy = searchCriteria.getText().toString();
-        list.clear();
-    }
 }

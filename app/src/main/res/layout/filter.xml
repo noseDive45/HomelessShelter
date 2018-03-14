@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#bfffc0"
@@ -14,7 +15,7 @@
         android:text="Gender:" />
 
     <Spinner
-        android:id="@+id/genderSpinner"
+        android:id="@+id/genderSpinner123"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:entries="@array/genders"
@@ -28,7 +29,7 @@
         android:text="Age Range:" />
 
     <Spinner
-        android:id="@+id/ageSpinner"
+        android:id="@+id/ageSpinner123"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:entries="@array/ages"
@@ -42,7 +43,7 @@
         android:text="Search by name:" />
 
     <EditText
-        android:id="@+id/searchContent"
+        android:id="@+id/searchContent123"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"

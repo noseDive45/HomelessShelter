@@ -32,17 +32,18 @@
     <string name="gender_prompt">Choose one</string>
 
     <string-array name="genders">
-        <item>Male</item>
-        <item>Female</item>
+        <item>Both</item>
+        <item>Men</item>
+        <item>Women</item>
     </string-array>
 
     <string name="age_prompt">Choose one</string>
 
     <string-array name="ages">
-        <item>Families w/ Newborns</item>
-        <item>Young Adults</item>
-        <item>Adults</item>
         <item>Anyone</item>
+        <item>Families w/ Newborns</item>
+        <item>Children</item>
+        <item>Young Adults</item>
         <item>Veterans</item>
     </string-array>
 
