@@ -1,10 +1,13 @@
 package com.example.jackson.homelessshelter;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Jackson on 3/12/2018.
  */
 
-public class Shelter {
+public class Shelter implements Parcelable {
 
     private String key;
     private String name;
@@ -28,6 +31,45 @@ public class Shelter {
         this.special = special;
         this.phone = phone;
     }
+
+    public Shelter(Parcel in){
+        String[] data = new String[3];
+
+        in.readStringArray(data);
+
+        this.key = data[0];
+        this.name = data[1];
+        this.capacity = Integer.parseInt(data[2]);
+        this.restrictions = data[3];
+        this.longitude = Double.parseDouble(data[4]);
+        this.latitude = Double.parseDouble(data[5]);
+        this.address = address;
+        this.special = special;
+        this.phone = phone;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeStringArray(new String[] {this.key,
+                this.name, Integer.toString(this.capacity),
+                this.restrictions, Double.toString(this.longitude),
+                Double.toString(this.latitude), this.address,
+                this.special, this.phone
+        });
+    }
+
+    public int describeContents(){
+        return 0;
+    }
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Shelter createFromParcel(Parcel in) {
+            return new Shelter(in);
+        }
+
+        public Shelter[] newArray(int size) {
+            return new Shelter[size];
+        }
+    };
 
     public void setKey(String key) {
         this.key = key;

@@ -60,10 +60,7 @@ public class SheltersFragment extends Fragment {
     private String restrictions;
     private String phone;
     private String passedName;
-    private float capacity;
-    private TextView nameView;
-    private TextView addressView;
-    private TextView phoneView;
+    private int capacity;
     private ConstraintLayout lin;
     private TextView capacityView;
     private TextView genderView;
@@ -266,30 +263,40 @@ public class SheltersFragment extends Fragment {
                         address = snap.child("address").getValue(String.class);
                         restrictions = snap.child("restrictions").getValue(String.class);
                         phone = snap.child("phone").getValue(String.class);
-                        capacity = snap.child("capacity").getValue(Float.class);
+                        capacity = snap.child("capacity").getValue(Integer.class);
                         latitude = snap.child("latitude").getValue(Float.class);
                         longitude = snap.child("longitude").getValue(Float.class);
-                        gender = snap.child("restrictions").getValue(String.class);
                     }
                     // Create shelter details popup window
-                    layoutInflater = (LayoutInflater) getActivity().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-                    ViewGroup container = (ViewGroup) layoutInflater.inflate(R.layout.popwindow, null);
-                    shelterPopup = new PopupWindow(container, (int) Math.round(lin.getWidth() * .7), (int) Math.round(lin.getHeight() * .8), true);
-                    nameView = shelterPopup.getContentView().findViewById(R.id.name);
-                    addressView = shelterPopup.getContentView().findViewById(R.id.address);
-                    phoneView = shelterPopup.getContentView().findViewById(R.id.phone);
-                    capacityView = shelterPopup.getContentView().findViewById(R.id.capacity);
-                    longitudeView = shelterPopup.getContentView().findViewById(R.id.longitude);
-                    latitudeView = shelterPopup.getContentView().findViewById(R.id.latitude);
-                    genderView = shelterPopup.getContentView().findViewById(R.id.genders);
-                    nameView.setText(name);
-                    addressView.setText(address);
-                    phoneView.setText(phone);
-                    capacityView.setText(String.valueOf(capacity));
-                    longitudeView.setText(Objects.toString(longitude));
-                    latitudeView.setText(String.format("%f", latitude));
-                    genderView.setText(gender);
-                    shelterPopup.showAtLocation(getActivity().findViewById(R.id.linlayShelter), Gravity.CENTER, 0, 0);
+//                    layoutInflater = (LayoutInflater) getActivity().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+//                    ViewGroup container = (ViewGroup) layoutInflater.inflate(R.layout.popwindow, null);
+//                    shelterPopup = new PopupWindow(container, (int) Math.round(lin.getWidth() * .7), (int) Math.round(lin.getHeight() * .8), true);
+
+                    Shelter queryDetails = new Shelter("unique", name, capacity,
+                            restrictions, longitude, latitude, address, special, phone);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("Shelter", queryDetails);
+                    android.support.v4.app.Fragment det = new ShelterDetails();
+                    android.support.v4.app.FragmentManager fm = getFragmentManager();
+                    android.support.v4.app.FragmentTransaction trans = fm.beginTransaction();
+                    det.setArguments(bundle);
+                    trans.replace(R.id.frag_container, det).addToBackStack("last");
+                    trans.commit();
+//                    nameView = shelterPopup.getContentView().findViewById(R.id.name);
+//                    addressView = shelterPopup.getContentView().findViewById(R.id.address);
+//                    phoneView = shelterPopup.getContentView().findViewById(R.id.phone);
+//                    capacityView = shelterPopup.getContentView().findViewById(R.id.capacity);
+//                    longitudeView = shelterPopup.getContentView().findViewById(R.id.longitude);
+//                    latitudeView = shelterPopup.getContentView().findViewById(R.id.latitude);
+//                    genderView = shelterPopup.getContentView().findViewById(R.id.genders);
+//                    nameView.setText(name);
+//                    addressView.setText(address);
+//                    phoneView.setText(phone);
+//                    capacityView.setText(String.valueOf(capacity));
+//                    longitudeView.setText(Objects.toString(longitude));
+//                    latitudeView.setText(String.format("%f", latitude));
+//                    genderView.setText(gender);
+//                    shelterPopup.showAtLocation(getActivity().findViewById(R.id.linlayShelter), Gravity.CENTER, 0, 0);
                 }
             }
 
