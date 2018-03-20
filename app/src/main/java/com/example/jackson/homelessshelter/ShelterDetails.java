@@ -11,7 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 
 /**
@@ -39,7 +47,18 @@ public class ShelterDetails extends Fragment {
     private Button commitReservation;
     private Shelter currentShelter;
     private Bundle bundle;
-    private android.support.v4.app.FragmentManager fragmentManager = getFragmentManager();
+    private android.support.v4.app.FragmentManager fragmentManager;
+    private FirebaseAuth fAuth;
+    private DatabaseReference database;
+    private String email;
+    private User currentUser;
+    private LinearLayout linlayCommit;
+    private TextView shelterView;
+    private TextView occupiedCount;
+    private LinearLayout linlayCommitted;
+    private TextView warning;
+    private DatabaseReference users;
+    private DatabaseReference shelters;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,6 +86,13 @@ public class ShelterDetails extends Fragment {
     }
 
     private void initialize() {
+        fAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance().getReference();
+        users = database.child("user");
+        shelters = database.child("shelters");
+        email = fAuth.getCurrentUser().getEmail();
+        fragmentManager = getFragmentManager();
+        linlayCommit = getActivity().findViewById(R.id.aboveCommit);
         nameView = getActivity().findViewById(R.id.name);
         addressView = getActivity().findViewById(R.id.address);
         phoneView = getActivity().findViewById(R.id.phone);
@@ -74,7 +100,11 @@ public class ShelterDetails extends Fragment {
         genderView = getActivity().findViewById(R.id.genders);
         longitudeView = getActivity().findViewById(R.id.longitude);
         latitudeView = getActivity().findViewById(R.id.latitude);
-        roomNumber = (EditText) getActivity().findViewById(R.id.numberOfRooms);
+        roomNumber = getActivity().findViewById(R.id.numberOfRooms);
+        occupiedCount = getActivity().findViewById(R.id.occupiedCount);
+        shelterView = getActivity().findViewById(R.id.shelterView);
+        linlayCommitted = getActivity().findViewById(R.id.linLayCommitted);
+        warning = getActivity().findViewById(R.id.warning);
         bundle = getArguments();
         currentShelter = bundle.getParcelable("Shelter");
         nameView.setText(currentShelter.getName());
@@ -91,22 +121,53 @@ public class ShelterDetails extends Fragment {
                 reserveARoom();
             }
         });
+        determineVisibility();
     }
 
     private void reserveARoom() {
         String rooms = roomNumber.getText().toString();
         int number = 0;
+        View focusView = null;
+        roomNumber.setError(null);
         if (!rooms.equals("")) {
             try {
                 number = Integer.parseInt(rooms);
             } catch (Exception e) {
 
             }
-            if (currentShelter.getCapacity() <= number) {
+            if (number == 0) {
+                roomNumber.setError("You cannot reserve 0 rooms");
+                focusView = roomNumber;
+                focusView.requestFocus();
+            } else if (currentShelter.getCapacity() <= number) {
                 // Reserve the room && update capacity && update occupying for user
+
             } else {
                 // Say the number of rooms requested is more than are available
+                roomNumber.setError("You have requested more rooms than are available.  "
+                        + "Please check the capacity above.");
+                focusView = roomNumber;
+                focusView.requestFocus();
             }
+        }
+    }
+
+    private void setCurrentUser() {
+        currentUser = new User();
+    }
+
+    private void determineVisibility() {
+        setCurrentUser();
+        if (currentUser.getOccupiedBeds() == 0) {
+            linlayCommit.setVisibility(View.VISIBLE);
+            commitReservation.setVisibility(View.VISIBLE);
+            warning.setVisibility(View.INVISIBLE);
+            linlayCommitted.setVisibility(View.INVISIBLE);
+        } else {
+            linlayCommit.setVisibility(View.INVISIBLE);
+            commitReservation.setVisibility(View.INVISIBLE);
+            warning.setVisibility(View.VISIBLE);
+            linlayCommitted.setVisibility(View.VISIBLE);
         }
     }
 

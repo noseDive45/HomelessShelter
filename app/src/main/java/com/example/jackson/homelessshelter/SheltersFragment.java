@@ -116,7 +116,7 @@ public class SheltersFragment extends Fragment {
         shelters.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Shelter addMe = new Shelter("useless",
+                Shelter addMe = new Shelter(dataSnapshot.getValue().toString(),
                         dataSnapshot.child("name").getValue(String.class),
                         dataSnapshot.child("capacity").getValue(Integer.class),
                         dataSnapshot.child("restrictions").getValue(String.class),

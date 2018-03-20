@@ -86,10 +86,8 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
     @Override
     public void onStart() {
         super.onStart();
-        initialize();
-
         // See if user already logged in
-
+        initialize();
         if (fAuth.getCurrentUser() != null) {
             nextPageSelection();
         }
@@ -230,7 +228,6 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
 //            return;
 //        }
 
-        Log.wtf("Trying", "login");
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);

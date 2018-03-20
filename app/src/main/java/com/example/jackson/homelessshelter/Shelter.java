@@ -3,6 +3,8 @@ package com.example.jackson.homelessshelter;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.FirebaseDatabase;
+
 /**
  * Created by Jackson on 3/12/2018.
  */
@@ -18,6 +20,7 @@ public class Shelter implements Parcelable {
     private String address;
     private String special;
     private String phone;
+    private FirebaseDatabase currentShelter;
 
     public Shelter(String key, String name, int capacity, String restrictions, double longitude,
                    double latitude, String address, String special, String phone) {
@@ -31,6 +34,12 @@ public class Shelter implements Parcelable {
         this.special = special;
         this.phone = phone;
     }
+
+//    private void callDatabases() {
+//        currentShelter = FirebaseDatabase.getInstance()
+//                .getReference().child("user").child(fAuth.getUid());
+//    }
+
 
     public Shelter(Parcel in){
         String[] data = new String[3];
