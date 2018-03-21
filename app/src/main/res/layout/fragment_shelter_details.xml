@@ -74,7 +74,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/reserve"
@@ -101,21 +102,24 @@
             android:id="@+id/commit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Commit Reservation" />
+            android:text="Commit Reservation"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/warning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="You cannot reserve a room." />
+            android:text="You cannot reserve a room."
+            android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/linLayCommitted"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/preface"
@@ -133,14 +137,27 @@
                 android:id="@+id/midface"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" at " />
+                android:text=" rooms at " />
 
             <TextView
-                android:id="@+id/shelterView"
+                android:id="@+id/occupiedShelter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
+            <TextView
+                android:id="@+id/midface"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="." />
+
         </LinearLayout>
+
+        <Button
+            android:id="@+id/release"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Release Rooms"
+            android:visibility="gone" />
 
     </LinearLayout>
 

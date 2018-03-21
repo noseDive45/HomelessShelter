@@ -33,32 +33,13 @@ public class User {
         this.occupiedBeds = occupiedBeds;
         this.currentShelter = currentShelter;
         this.username = username;
-        callDatabases();
     }
 
     public User() {
-        fAuth = FirebaseAuth.getInstance();
-        currentUser = FirebaseDatabase.getInstance()
-                .getReference().child("user").child(fAuth.getUid());
-        currentUser.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                admin = dataSnapshot.child("admin").getValue(Boolean.class);
-                email = dataSnapshot.child("email").getValue(String.class);
-                firstName = dataSnapshot.child("firstName").getValue(String.class);
-                lastName = dataSnapshot.child("lastName").getValue(String.class);
-                occupiedBeds = dataSnapshot.child("occupiedBeds").getValue(Integer.class);
-                username = dataSnapshot.child("username").getValue(String.class);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
-    private void callDatabases() {
+    public void callDatabases() {
+        fAuth = FirebaseAuth.getInstance();
         currentUser = FirebaseDatabase.getInstance()
                 .getReference().child("user").child(fAuth.getUid());
     }
@@ -69,6 +50,10 @@ public class User {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public void setAdmin(boolean admin, boolean useless) {
+        this.admin = admin;
         currentUser.child("admin").setValue(admin);
     }
 
@@ -77,6 +62,10 @@ public class User {
     }
 
     public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setEmail(String email, boolean useless) {
         this.email = email;
         currentUser.child("email").setValue(email);
     }
@@ -87,6 +76,10 @@ public class User {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public void setFirstName(String firstName, boolean useless) {
+        this.firstName = firstName;
         currentUser.child("firstName").setValue(firstName);
     }
 
@@ -95,6 +88,10 @@ public class User {
     }
 
     public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setLastName(String lastName, boolean useless) {
         this.lastName = lastName;
         currentUser.child("lastName").setValue(lastName);
     }
@@ -105,6 +102,10 @@ public class User {
 
     public void setOccupiedBeds(int occupiedBeds) {
         this.occupiedBeds = occupiedBeds;
+    }
+
+    public void setOccupiedBeds(int occupiedBeds, boolean useless) {
+        this.occupiedBeds = occupiedBeds;
         currentUser.child("occupiedBeds").setValue(occupiedBeds);
     }
 
@@ -113,6 +114,10 @@ public class User {
     }
 
     public void setCurrentShelter(String currentShelter) {
+        this.currentShelter = currentShelter;
+    }
+
+    public void setCurrentShelter(String currentShelter, boolean useless) {
         this.currentShelter = currentShelter;
         currentUser.child("currentShelter").setValue(currentShelter);
     }
@@ -123,7 +128,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setUsername(String username, boolean uelesss) {
+        this.username = username;
         currentUser.child("username").setValue(username);
     }
 
+    public String toString() {
+        return Integer.toString(occupiedBeds) + username + "legend";
+    }
 }

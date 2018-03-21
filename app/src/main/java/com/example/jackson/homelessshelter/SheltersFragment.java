@@ -48,30 +48,12 @@ public class SheltersFragment extends Fragment {
     private ArrayList<String> list;
     private ListView listView;
     private DrawerLocker lockheed;
-    private PopupWindow shelterPopup;
-    private PopupWindow filterPopup;
-    private LayoutInflater layoutInflater;
-    private float longitude;
-    private float latitude;
-    private String address;
-    private String special;
-    private String name;
-    private String gender;
-    private String restrictions;
-    private String phone;
-    private String passedName;
-    private int capacity;
-    private ConstraintLayout lin;
-    private TextView capacityView;
-    private TextView genderView;
-    private TextView longitudeView;
-    private TextView latitudeView;
     private Spinner genderSpinner;
     private Spinner ageSpinner;
     private EditText searchCriteria;
-    private Button submitFilter;
     private ArrayList<Shelter> baseList;
     private String lastSearch;
+    private Shelter queryDetails;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -93,7 +75,6 @@ public class SheltersFragment extends Fragment {
     // Initialize references and populate list
 
     private void initialize() {
-        lin = (ConstraintLayout) getActivity().findViewById(R.id.mainViewShelter);
         list = new ArrayList<String>();
         adapt = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
         baseList = new ArrayList<Shelter>();
@@ -116,15 +97,8 @@ public class SheltersFragment extends Fragment {
         shelters.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Shelter addMe = new Shelter(dataSnapshot.getValue().toString(),
-                        dataSnapshot.child("name").getValue(String.class),
-                        dataSnapshot.child("capacity").getValue(Integer.class),
-                        dataSnapshot.child("restrictions").getValue(String.class),
-                        dataSnapshot.child("longitude").getValue(Double.class),
-                        dataSnapshot.child("latitude").getValue(Double.class),
-                        dataSnapshot.child("address").getValue(String.class),
-                        dataSnapshot.child("special").getValue(String.class),
-                        dataSnapshot.child("phone").getValue(String.class));
+                Shelter addMe = dataSnapshot.getValue(Shelter.class);
+                System.out.println(addMe);
                 baseList.add(addMe);
                 list.add(dataSnapshot.child("name").getValue(String.class));
                 adapt.notifyDataSetChanged();
@@ -258,22 +232,10 @@ public class SheltersFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot snap : dataSnapshot.getChildren()) {
-                        name = snap.child("name").getValue(String.class);
-                        special = snap.child("special").getValue(String.class);
-                        address = snap.child("address").getValue(String.class);
-                        restrictions = snap.child("restrictions").getValue(String.class);
-                        phone = snap.child("phone").getValue(String.class);
-                        capacity = snap.child("capacity").getValue(Integer.class);
-                        latitude = snap.child("latitude").getValue(Float.class);
-                        longitude = snap.child("longitude").getValue(Float.class);
+                        queryDetails = snap.getValue(Shelter.class);
+                        queryDetails.setCurrentShelter(snap.getRef());
+                        System.out.println("here" + snap.getRef());
                     }
-                    // Create shelter details popup window
-//                    layoutInflater = (LayoutInflater) getActivity().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-//                    ViewGroup container = (ViewGroup) layoutInflater.inflate(R.layout.popwindow, null);
-//                    shelterPopup = new PopupWindow(container, (int) Math.round(lin.getWidth() * .7), (int) Math.round(lin.getHeight() * .8), true);
-
-                    Shelter queryDetails = new Shelter("unique", name, capacity,
-                            restrictions, longitude, latitude, address, special, phone);
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("Shelter", queryDetails);
                     android.support.v4.app.Fragment det = new ShelterDetails();
@@ -282,21 +244,6 @@ public class SheltersFragment extends Fragment {
                     det.setArguments(bundle);
                     trans.replace(R.id.frag_container, det).addToBackStack("last");
                     trans.commit();
-//                    nameView = shelterPopup.getContentView().findViewById(R.id.name);
-//                    addressView = shelterPopup.getContentView().findViewById(R.id.address);
-//                    phoneView = shelterPopup.getContentView().findViewById(R.id.phone);
-//                    capacityView = shelterPopup.getContentView().findViewById(R.id.capacity);
-//                    longitudeView = shelterPopup.getContentView().findViewById(R.id.longitude);
-//                    latitudeView = shelterPopup.getContentView().findViewById(R.id.latitude);
-//                    genderView = shelterPopup.getContentView().findViewById(R.id.genders);
-//                    nameView.setText(name);
-//                    addressView.setText(address);
-//                    phoneView.setText(phone);
-//                    capacityView.setText(String.valueOf(capacity));
-//                    longitudeView.setText(Objects.toString(longitude));
-//                    latitudeView.setText(String.format("%f", latitude));
-//                    genderView.setText(gender);
-//                    shelterPopup.showAtLocation(getActivity().findViewById(R.id.linlayShelter), Gravity.CENTER, 0, 0);
                 }
             }
 

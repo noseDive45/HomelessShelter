@@ -3,6 +3,7 @@ package com.example.jackson.homelessshelter;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 /**
@@ -11,7 +12,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class Shelter implements Parcelable {
 
-    private String key;
     private String name;
     private int capacity;
     private String restrictions;
@@ -20,11 +20,10 @@ public class Shelter implements Parcelable {
     private String address;
     private String special;
     private String phone;
-    private FirebaseDatabase currentShelter;
+    private DatabaseReference currentShelter;
 
-    public Shelter(String key, String name, int capacity, String restrictions, double longitude,
+    public Shelter(String name, int capacity, String restrictions, double longitude,
                    double latitude, String address, String special, String phone) {
-        this.key = key;
         this.name = name;
         this.capacity = capacity;
         this.restrictions = restrictions;
@@ -35,54 +34,17 @@ public class Shelter implements Parcelable {
         this.phone = phone;
     }
 
-//    private void callDatabases() {
-//        currentShelter = FirebaseDatabase.getInstance()
-//                .getReference().child("user").child(fAuth.getUid());
+    public Shelter() {
+
+    }
+
+    public void setCurrentShelter(DatabaseReference currentShelter) {
+        this.currentShelter = currentShelter;
+    }
+//
+//    public DatabaseReference getCurrentShelter() {
+//        return currentShelter;
 //    }
-
-
-    public Shelter(Parcel in){
-        String[] data = new String[3];
-
-        in.readStringArray(data);
-
-        this.key = data[0];
-        this.name = data[1];
-        this.capacity = Integer.parseInt(data[2]);
-        this.restrictions = data[3];
-        this.longitude = Double.parseDouble(data[4]);
-        this.latitude = Double.parseDouble(data[5]);
-        this.address = address;
-        this.special = special;
-        this.phone = phone;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(new String[] {this.key,
-                this.name, Integer.toString(this.capacity),
-                this.restrictions, Double.toString(this.longitude),
-                Double.toString(this.latitude), this.address,
-                this.special, this.phone
-        });
-    }
-
-    public int describeContents(){
-        return 0;
-    }
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        public Shelter createFromParcel(Parcel in) {
-            return new Shelter(in);
-        }
-
-        public Shelter[] newArray(int size) {
-            return new Shelter[size];
-        }
-    };
-
-    public void setKey(String key) {
-        this.key = key;
-    }
 
     public String getName() {
         return name;
@@ -98,6 +60,11 @@ public class Shelter implements Parcelable {
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
+    }
+
+    public void setCapacity(int capacity, boolean useless) {
+        this.capacity = capacity;
+        currentShelter.child("capacity").setValue(capacity);
     }
 
     public String getRestrictions() {
@@ -151,4 +118,44 @@ public class Shelter implements Parcelable {
     public String toString() {
         return name;
     }
+
+    public Shelter(Parcel in){
+        String[] data = new String[8];
+
+        in.readStringArray(data);
+
+        this.name = data[0];
+        this.capacity = Integer.parseInt(data[1]);
+        this.restrictions = data[2];
+        this.longitude = Double.parseDouble(data[3]);
+        this.latitude = Double.parseDouble(data[4]);
+        this.address = data[5];
+        this.special = data[6];
+        this.phone = data[7];
+        this.currentShelter = FirebaseDatabase.getInstance().getReferenceFromUrl(data[8]);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeStringArray(new String[] {
+                this.name, Integer.toString(this.capacity),
+                this.restrictions, Double.toString(this.longitude),
+                Double.toString(this.latitude), this.address,
+                this.special, this.phone, this.currentShelter.toString()
+        });
+    }
+
+    public int describeContents(){
+        return 0;
+    }
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Shelter createFromParcel(Parcel in) {
+            return new Shelter(in);
+        }
+
+        public Shelter[] newArray(int size) {
+            return new Shelter[size];
+        }
+    };
+
 }
