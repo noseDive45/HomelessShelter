@@ -1,59 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#bfffc0"
-    android:gravity="center"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/gender"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Gender:" />
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
 
-    <Spinner
-        android:id="@+id/genderSpinner123"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:entries="@array/genders"
-        android:gravity="center"
-        android:prompt="@string/gender_prompt" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:orientation="vertical"
+            android:weightSum="2">
 
-    <TextView
-        android:id="@+id/age"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Age Range:" />
+            <TextView
+                android:id="@+id/gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Gender:" />
 
-    <Spinner
-        android:id="@+id/ageSpinner123"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:entries="@array/ages"
-        android:gravity="center"
-        android:prompt="@string/age_prompt" />
+            <Spinner
+                android:id="@+id/genderSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:entries="@array/genders"
+                android:gravity="center_horizontal"
+                android:prompt="@string/gender_prompt" />
 
-    <TextView
-        android:id="@+id/search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Search by name:" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/age"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Age Groups/Veterans" />
+
+            <Spinner
+                android:id="@+id/ageSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:entries="@array/ages"
+                android:gravity="center_horizontal"
+                android:prompt="@string/age_prompt" />
+        </LinearLayout>
+
+    </LinearLayout>
 
     <EditText
-        android:id="@+id/searchContent123"
+        android:id="@+id/searchContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Type here" />
-
-    <Button
-        android:id="@+id/submitFilter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:gravity="center"
-        android:text="Submit" />
+        android:hint="Search by Shelter Name" />
 </LinearLayout>

@@ -8,83 +8,19 @@
     tools:context="com.example.jackson.homelessshelter.SheltersFragment">
 
     <LinearLayout
-        android:id="@+id/linlayShelter"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:weightSum="2"
-                android:gravity="start"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/gender"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="Gender:" />
-
-                <Spinner
-                    android:id="@+id/genderSpinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:entries="@array/genders"
-                    android:prompt="@string/gender_prompt" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/age"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:text="Age Groups/Veterans" />
-
-                <Spinner
-                    android:id="@+id/ageSpinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:entries="@array/ages"
-                    android:gravity="center_horizontal"
-                    android:prompt="@string/age_prompt" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <EditText
-            android:id="@+id/searchContent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:hint="Search by Shelter Name" />
+        <include
+            layout="@layout/filter"></include>
 
         <ListView
-            android:id="@+id/listView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+                android:id="@+id/listView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        </ListView>
+            </ListView>
     </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>

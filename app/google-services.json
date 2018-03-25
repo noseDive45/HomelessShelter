@@ -42,6 +42,13 @@
             {
               "client_id": "34909590482-fqirn29luiefs7rmkseg2qntg96c4oda.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "34909590482-585f20gpv83m9g2iicvop2nj5ln9q1uq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "Chris.Truong.HomelessShelter"
+              }
             }
           ]
         },

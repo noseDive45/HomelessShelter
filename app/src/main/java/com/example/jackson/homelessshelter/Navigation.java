@@ -101,8 +101,12 @@ public class Navigation extends AppCompatActivity
             android.support.v4.app.FragmentTransaction trans = fm.beginTransaction();
             trans.replace(R.id.frag_container, shelters);
             trans.commit();
-        } else if (id == R.id.nav_slideshow) {
-
+        } else if (id == R.id.map) {
+            android.support.v4.app.Fragment map = new Map();
+            android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+            android.support.v4.app.FragmentTransaction trans = fm.beginTransaction();
+            trans.replace(R.id.frag_container, map);
+            trans.commit();
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {

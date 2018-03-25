@@ -52,7 +52,6 @@ public class SheltersFragment extends Fragment {
     private Spinner ageSpinner;
     private EditText searchCriteria;
     private ArrayList<Shelter> baseList;
-    private String lastSearch;
     private Shelter queryDetails;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -98,7 +97,6 @@ public class SheltersFragment extends Fragment {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Shelter addMe = dataSnapshot.getValue(Shelter.class);
-                System.out.println(addMe);
                 baseList.add(addMe);
                 list.add(dataSnapshot.child("name").getValue(String.class));
                 adapt.notifyDataSetChanged();
@@ -121,7 +119,6 @@ public class SheltersFragment extends Fragment {
         ageSpinner = (Spinner) getActivity().findViewById(R.id.ageSpinner);
         genderSpinner = (Spinner) getActivity().findViewById(R.id.genderSpinner);
         searchCriteria = (EditText) getActivity().findViewById(R.id.searchContent);
-        lastSearch = "";
         searchCriteria.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -130,9 +127,10 @@ public class SheltersFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                generateList(ageSpinner.getSelectedItem().toString(),
+                list = generateList(ageSpinner.getSelectedItem().toString(),
                         genderSpinner.getSelectedItem().toString(),
                         charSequence);
+                adapt.notifyDataSetChanged();
             }
 
             @Override
@@ -143,9 +141,10 @@ public class SheltersFragment extends Fragment {
         genderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                generateList(ageSpinner.getSelectedItem().toString(),
+                list = generateList(ageSpinner.getSelectedItem().toString(),
                         genderSpinner.getSelectedItem().toString(),
                         searchCriteria.getText().toString());
+                adapt.notifyDataSetChanged();
             }
 
                 @Override
@@ -156,9 +155,10 @@ public class SheltersFragment extends Fragment {
         ageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                generateList(ageSpinner.getSelectedItem().toString(),
+                list = generateList(ageSpinner.getSelectedItem().toString(),
                         genderSpinner.getSelectedItem().toString(),
                         searchCriteria.getText().toString());
+                adapt.notifyDataSetChanged();
             }
 
             @Override
@@ -168,7 +168,7 @@ public class SheltersFragment extends Fragment {
         });
     }
 
-    private void generateList(String ageFilt, String gendFilt, CharSequence search) {
+    private ArrayList<String> generateList(String ageFilt, String gendFilt, CharSequence search) {
         list.clear();
         for (Shelter shelts : baseList) {
             list.add(shelts.getName());
@@ -206,9 +206,6 @@ public class SheltersFragment extends Fragment {
                 }
             }
         }
-        System.out.println("swap");
-        System.out.println(!Objects.equals(lastSearch, search.toString()));
-        System.out.println(!lastSearch.equals(search.toString()));
         if (search.length() != 0) {
             ArrayList<String> legend = new ArrayList<>();
             for (String name : list) {
@@ -218,8 +215,7 @@ public class SheltersFragment extends Fragment {
             }
             list.removeAll(legend);
         }
-        adapt.notifyDataSetChanged();
-        lastSearch = search.toString();
+        return list;
     }
 
     // Create popup window with shelter details
