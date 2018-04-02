@@ -10,7 +10,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.jackson.homelessshelter.LoginFragment">
+    tools:context="com.example.jackson.homelessshelter.Controller.LoginFragment">
 
     <!-- Login progress -->
 
@@ -113,7 +113,6 @@
                     android:layout_width="77dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:password="false"
                     android:text="Register"
                     android:textColor="@android:color/white" />
 

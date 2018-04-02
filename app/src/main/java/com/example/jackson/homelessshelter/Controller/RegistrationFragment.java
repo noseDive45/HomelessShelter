@@ -1,16 +1,14 @@
-package com.example.jackson.homelessshelter;
+package com.example.jackson.homelessshelter.Controller;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +19,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.example.jackson.homelessshelter.Model.DrawerLocker;
+import com.example.jackson.homelessshelter.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -29,8 +29,6 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.concurrent.Executor;
 
 // Firebase
 
@@ -100,7 +98,7 @@ public class RegistrationFragment extends Fragment {
     // Attempts registration starting at my cases then proceeding to
     // firebase's cases
 
-    public void attemptRegistration() {
+    private void attemptRegistration() {
 
         firstName.setError(null);
         lastName.setError(null);
@@ -196,12 +194,16 @@ public class RegistrationFragment extends Fragment {
                                 addToDataBase(user);
                                 android.support.v4.app.Fragment loggedIn = new LoggedInFragment();
                                 android.support.v4.app.FragmentManager fm = getFragmentManager();
-                                android.support.v4.app.FragmentTransaction trans = fm.beginTransaction();
+                                android.support.v4.app.FragmentTransaction trans = fm
+                                        .beginTransaction();
                                 trans.replace(R.id.frag_container, loggedIn);
                                 trans.commit();
                             } else {
-                                FirebaseAuthException e = (FirebaseAuthException )task.getException();
-                                Toast.makeText(getActivity(), "Failed Registration: "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                FirebaseAuthException e = (FirebaseAuthException )task
+                                        .getException();
+                                Toast.makeText(getActivity(),
+                                        "Failed Registration: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
                                 showProgress(false);
                                 return;
                             }
@@ -214,14 +216,15 @@ public class RegistrationFragment extends Fragment {
 
     // Adds user data to firebase
 
-    public void addToDataBase(FirebaseUser user) {
+    private void addToDataBase(FirebaseUser user) {
         String uid = user.getUid();
         userRef.child(uid);
         userRef.child(uid).child("email").setValue(user.getEmail());
         if (!isValidEmail(username.getText().toString())) {
             userRef.child(uid).child("username").setValue(username.getText().toString());
         } else {
-            userRef.child(uid).child("username").setValue(username.getText().toString().split("@")[0]);
+            userRef.child(uid).child("username")
+                    .setValue(username.getText().toString().split("@")[0]);
         }
         userRef.child(uid).child("admin").setValue(admin.isChecked());
         userRef.child(uid).child("firstName").setValue(firstName.getText().toString());
@@ -242,7 +245,7 @@ public class RegistrationFragment extends Fragment {
 
     // Checks if both the passwords match
 
-    private boolean matches(String p1, String p2) {
+    private boolean matches(CharSequence p1, CharSequence p2) {
         int counter = 0;
         if (p1.length() != p2.length()) {
             return false;

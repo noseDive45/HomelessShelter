@@ -20,13 +20,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LoginFragment"
+            android:name=".Controller.LoginFragment"
             android:label="@string/app_name" />
         <activity
-            android:name=".Pop"
+            android:name=".Controller.Pop"
             android:theme="@style/AppTheme.SeeBackground" />
         <activity
-            android:name=".Navigation"
+            android:name=".Controller.Navigation"
             android:label="@string/title_activity_navigation"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

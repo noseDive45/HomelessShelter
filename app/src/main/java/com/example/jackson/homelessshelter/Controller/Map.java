@@ -1,13 +1,9 @@
-package com.example.jackson.homelessshelter;
+package com.example.jackson.homelessshelter.Controller;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -23,9 +19,8 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.google.android.gms.common.data.DataBufferObserverSet;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.example.jackson.homelessshelter.Model.Shelter;
+import com.example.jackson.homelessshelter.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -38,6 +33,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -54,15 +50,15 @@ public class Map extends Fragment implements OnMapReadyCallback{
     private MapView mapView;
     private GoogleMap map;
     private LocationManager locationManager;
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private String provider;
     private DatabaseReference database;
     private DatabaseReference shelters;
-    private ArrayList<Shelter> baseList;
+    private List<Shelter> baseList;
     private Spinner ageSpinner;
     private Spinner genderSpinner;
     private EditText searchCriteria;
-    private ArrayList<Shelter> list;
+    private List<Shelter> list;
 
 
     @Override
@@ -154,7 +150,7 @@ public class Map extends Fragment implements OnMapReadyCallback{
 //        }
     }
 
-    private void putMarkers(ArrayList<Shelter> list) {
+    private void putMarkers(List<Shelter> list) {
         map.clear();
         for (Shelter each : list) {
             String snippet = "";
@@ -175,7 +171,7 @@ public class Map extends Fragment implements OnMapReadyCallback{
         database = FirebaseDatabase.getInstance().getReference();
         shelters = database.child("shelter");
         // Populate list with shelter names
-        baseList = new ArrayList<Shelter>();
+        baseList = new ArrayList<>();
         shelters.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -257,7 +253,7 @@ public class Map extends Fragment implements OnMapReadyCallback{
             }
         }
         if (search.length() != 0) {
-            ArrayList<Shelter> legend = new ArrayList<>();
+            List<Shelter> legend = new ArrayList<>();
             for (Shelter name : list) {
                 if (!name.getName().toLowerCase().contains(search.toString().toLowerCase())) {
                     legend.add(name);
@@ -295,7 +291,7 @@ public class Map extends Fragment implements OnMapReadyCallback{
 //        mapView.onResume();
     }
 
-    public boolean checkLocationPermission() {
+    private boolean checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {

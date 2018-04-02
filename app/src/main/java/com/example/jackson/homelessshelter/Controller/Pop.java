@@ -1,12 +1,11 @@
-package com.example.jackson.homelessshelter;
+package com.example.jackson.homelessshelter.Controller;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.jackson.homelessshelter.R;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -16,15 +15,12 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-
-/**
- * Created by Jackson on 3/4/2018.
- */
 
 public class Pop extends Activity {
 
-    private ArrayList<String> list;
+    protected List<String> list;
     private DatabaseReference database;
     private long longitude;
     private long latitude;
@@ -58,31 +54,31 @@ public class Pop extends Activity {
         addressView = (TextView) findViewById(R.id.address);
         phoneView = (TextView) findViewById(R.id.phone);
         database = FirebaseDatabase.getInstance().getReference();
-        list = new ArrayList<String>();database = FirebaseDatabase.getInstance().getReference();
+        list = new ArrayList<>();database = FirebaseDatabase.getInstance().getReference();
         // Populate list with shelter names
         DatabaseReference shelters = FirebaseDatabase.getInstance().getReference("shelter");
         Query query = shelters.orderByChild("name").equalTo(passedName);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                 @Override
-                                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                                     DataSnapshot needed = dataSnapshot;
-                                                     System.out.println("found");
-                                                     name = needed.child("name").getValue(String.class);
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                DataSnapshot needed = dataSnapshot;
+                System.out.println("found");
+                name = needed.child("name").getValue(String.class);
 //                                                     capacity = needed.child("capacity").getValue(Long.class);
-                                                     special = needed.child("special").getValue(String.class);
-                                                     address = needed.child("address").getValue(String.class);
-                                                     restrictions = needed.child("restrictions").getValue(String.class);
-                                                     phone = needed.child("phone").getValue(String.class);
+                special = needed.child("special").getValue(String.class);
+                address = needed.child("address").getValue(String.class);
+                restrictions = needed.child("restrictions").getValue(String.class);
+                phone = needed.child("phone").getValue(String.class);
 //                                                     latitude = needed.child("latitude").getValue(Long.class);
 //                                                     longitude = needed.child("longitude").getValue(Long.class);
-                                                     System.out.println("recorded");
-                                                 }
+                System.out.println("recorded");
+            }
 
-                                                 @Override
-                                                 public void onCancelled(DatabaseError databaseError) {
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-                                                 }
-                                             });
+            }
+        });
         database.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {

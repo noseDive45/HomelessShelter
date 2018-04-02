@@ -1,15 +1,8 @@
-package com.example.jackson.homelessshelter;
+package com.example.jackson.homelessshelter.Model;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-/**
- * Created by Jackson on 3/20/2018.
- */
 
 public class User {
 
@@ -52,7 +45,7 @@ public class User {
         this.admin = admin;
     }
 
-    public void setAdmin(boolean admin, boolean useless) {
+    public void setAdminFirebase(boolean admin) {
         this.admin = admin;
         currentUser.child("admin").setValue(admin);
     }
@@ -65,7 +58,7 @@ public class User {
         this.email = email;
     }
 
-    public void setEmail(String email, boolean useless) {
+    public void setEmailFirebase(String email) {
         this.email = email;
         currentUser.child("email").setValue(email);
     }
@@ -109,7 +102,7 @@ public class User {
         currentUser.child("occupiedBeds").setValue(occupiedBeds);
     }
 
-    public String getCurrentShelter() {
+    public CharSequence getCurrentShelter() {
         return currentShelter;
     }
 

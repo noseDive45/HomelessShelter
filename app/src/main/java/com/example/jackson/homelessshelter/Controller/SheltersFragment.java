@@ -1,30 +1,22 @@
-package com.example.jackson.homelessshelter;
+package com.example.jackson.homelessshelter.Controller;
 
 import android.app.Activity;
-import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.Spinner;
-import android.widget.TextView;
 
+import com.example.jackson.homelessshelter.Model.DrawerLocker;
+import com.example.jackson.homelessshelter.Model.Shelter;
+import com.example.jackson.homelessshelter.R;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,24 +26,21 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
+import java.util.List;
 import java.util.Objects;
-
-import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class SheltersFragment extends Fragment {
 
     private DatabaseReference database;
     private DatabaseReference shelters;
     private ArrayAdapter adapt;
-    private ArrayList<String> list;
+    private List<String> list;
     private ListView listView;
     private DrawerLocker lockheed;
     private Spinner genderSpinner;
     private Spinner ageSpinner;
     private EditText searchCriteria;
-    private ArrayList<Shelter> baseList;
+    private List<Shelter> baseList;
     private Shelter queryDetails;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,9 +63,9 @@ public class SheltersFragment extends Fragment {
     // Initialize references and populate list
 
     private void initialize() {
-        list = new ArrayList<String>();
-        adapt = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
-        baseList = new ArrayList<Shelter>();
+        list = new ArrayList<>();
+        adapt = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, list);
+        baseList = new ArrayList<>();
         listView = getActivity().findViewById(R.id.listView);
         listView.setAdapter(adapt);
         // Allow list items to be selected
@@ -207,7 +196,7 @@ public class SheltersFragment extends Fragment {
             }
         }
         if (search.length() != 0) {
-            ArrayList<String> legend = new ArrayList<>();
+            List<String> legend = new ArrayList<>();
             for (String name : list) {
                 if (!name.toLowerCase().contains(search.toString().toLowerCase())) {
                     legend.add(name);
@@ -215,7 +204,7 @@ public class SheltersFragment extends Fragment {
             }
             list.removeAll(legend);
         }
-        return list;
+        return (ArrayList<String>) list;
     }
 
     // Create popup window with shelter details

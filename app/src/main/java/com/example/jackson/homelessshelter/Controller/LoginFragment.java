@@ -1,12 +1,9 @@
-package com.example.jackson.homelessshelter;
+package com.example.jackson.homelessshelter.Controller;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.app.Fragment;
@@ -37,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 // Firebase
+import com.example.jackson.homelessshelter.Model.DrawerLocker;
+import com.example.jackson.homelessshelter.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseNetworkException;
@@ -45,11 +44,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 /**
  * A login screen that offers login via email/password.
@@ -312,7 +308,7 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
         return false;
     }
 
-    public void register() {
+    private void register() {
         android.support.v4.app.Fragment reg = new RegistrationFragment();
         android.support.v4.app.FragmentManager fm = getFragmentManager();
         android.support.v4.app.FragmentTransaction trans = fm.beginTransaction();

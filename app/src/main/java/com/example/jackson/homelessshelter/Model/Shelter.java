@@ -1,14 +1,10 @@
-package com.example.jackson.homelessshelter;
+package com.example.jackson.homelessshelter.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-/**
- * Created by Jackson on 3/12/2018.
- */
 
 public class Shelter implements Parcelable {
 
@@ -62,7 +58,7 @@ public class Shelter implements Parcelable {
         this.capacity = capacity;
     }
 
-    public void setCapacity(int capacity, boolean useless) {
+    public void setCapacityFirebase(int capacity) {
         this.capacity = capacity;
         currentShelter.child("capacity").setValue(capacity);
     }
@@ -91,7 +87,7 @@ public class Shelter implements Parcelable {
         this.latitude = latitude;
     }
 
-    public String getAddress() {
+    public CharSequence getAddress() {
         return address;
     }
 
@@ -107,7 +103,7 @@ public class Shelter implements Parcelable {
         this.special = special;
     }
 
-    public String getPhone() {
+    public CharSequence getPhone() {
         return phone;
     }
 

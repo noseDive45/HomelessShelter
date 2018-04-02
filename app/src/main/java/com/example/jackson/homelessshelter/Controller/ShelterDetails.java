@@ -1,9 +1,6 @@
-package com.example.jackson.homelessshelter;
+package com.example.jackson.homelessshelter.Controller;
 
 import android.app.Activity;
-import android.app.FragmentManager;
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,8 +11,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.jackson.homelessshelter.Model.DrawerLocker;
+import com.example.jackson.homelessshelter.Model.Shelter;
+import com.example.jackson.homelessshelter.Model.User;
+import com.example.jackson.homelessshelter.R;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -158,7 +158,7 @@ public class ShelterDetails extends Fragment {
                 focusView.requestFocus();
             } else if (currentShelter.getCapacity() >= number) {
                 // Reserve the room && update capacity && update occupying for user
-                currentShelter.setCapacity(currentShelter.getCapacity() - number, true);
+                currentShelter.setCapacityFirebase(currentShelter.getCapacity() - number);
                 currentUser.setCurrentShelter(currentShelter.getName(), true);
                 currentUser.setOccupiedBeds(number, true);
                 linlayCommit.setVisibility(View.GONE);
@@ -175,8 +175,8 @@ public class ShelterDetails extends Fragment {
     }
 
     private void releaseRoom() {
-        currentShelter.setCapacity(currentUser.getOccupiedBeds() + currentShelter.getCapacity(),
-                true);
+        currentShelter.setCapacityFirebase(currentUser.getOccupiedBeds()
+                + currentShelter.getCapacity());
         currentUser.setCurrentShelter("NA", true);
         currentUser.setOccupiedBeds(0, true);
         System.out.println("howmanytimesforme");
