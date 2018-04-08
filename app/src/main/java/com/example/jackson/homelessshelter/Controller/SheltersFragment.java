@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,13 +27,16 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This fragment contains a list of shelters as well as a filter for seeking shelters
+ */
+
 public class SheltersFragment extends Fragment {
 
-    private DatabaseReference database;
-    private DatabaseReference shelters;
     private ArrayAdapter adapt;
     private List<String> list;
     private ListView listView;
@@ -43,12 +47,14 @@ public class SheltersFragment extends Fragment {
     private List<Shelter> baseList;
     private Shelter queryDetails;
 
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         lockheed.unlocked(true);
         return inflater.inflate(R.layout.activity_list_of_shelters, container, false);
     }
 
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         lockheed = (DrawerLocker) activity;
@@ -63,10 +69,11 @@ public class SheltersFragment extends Fragment {
     // Initialize references and populate list
 
     private void initialize() {
+        Activity activity = getActivity();
         list = new ArrayList<>();
-        adapt = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, list);
+        adapt = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, list);
         baseList = new ArrayList<>();
-        listView = getActivity().findViewById(R.id.listView);
+        listView = activity.findViewById(R.id.listView);
         listView.setAdapter(adapt);
         // Allow list items to be selected
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -79,8 +86,7 @@ public class SheltersFragment extends Fragment {
                 giveDetails(itemValue);
             }
         });
-        database = FirebaseDatabase.getInstance().getReference();
-        shelters = database.child("shelter");
+        DatabaseReference shelters = FirebaseDatabase.getInstance().getReference().child("shelter");
         // Populate list with shelter names
         shelters.addChildEventListener(new ChildEventListener() {
             @Override
@@ -95,7 +101,7 @@ public class SheltersFragment extends Fragment {
             }
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                baseList.remove(dataSnapshot.getValue(String.class));
+                baseList.remove(dataSnapshot.getValue(Shelter.class));
                 adapt.notifyDataSetChanged();
             }
             @Override
@@ -105,9 +111,9 @@ public class SheltersFragment extends Fragment {
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-        ageSpinner = (Spinner) getActivity().findViewById(R.id.ageSpinner);
-        genderSpinner = (Spinner) getActivity().findViewById(R.id.genderSpinner);
-        searchCriteria = (EditText) getActivity().findViewById(R.id.searchContent);
+        ageSpinner = activity.findViewById(R.id.ageSpinner);
+        genderSpinner = activity.findViewById(R.id.genderSpinner);
+        searchCriteria = activity.findViewById(R.id.searchContent);
         searchCriteria.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -116,9 +122,13 @@ public class SheltersFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                list = generateList(ageSpinner.getSelectedItem().toString(),
-                        genderSpinner.getSelectedItem().toString(),
-                        charSequence);
+                Object age = ageSpinner.getSelectedItem();
+                Object gender = genderSpinner.getSelectedItem();
+                Object search = searchCriteria.getText();
+                String ageString = age.toString();
+                String genderString = gender.toString();
+                String searchString = search.toString();
+                generateList(ageString, genderString, searchString);
                 adapt.notifyDataSetChanged();
             }
 
@@ -130,81 +140,117 @@ public class SheltersFragment extends Fragment {
         genderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                list = generateList(ageSpinner.getSelectedItem().toString(),
-                        genderSpinner.getSelectedItem().toString(),
-                        searchCriteria.getText().toString());
+                Object age = ageSpinner.getSelectedItem();
+                Object gender = genderSpinner.getSelectedItem();
+                Object search = searchCriteria.getText();
+                String ageString = age.toString();
+                String genderString = gender.toString();
+                String searchString = search.toString();
+                generateList(ageString, genderString, searchString);
                 adapt.notifyDataSetChanged();
             }
 
                 @Override
                 public void onNothingSelected(AdapterView<?> adapterView) {
-                    return;
                 }
         });
         ageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                list = generateList(ageSpinner.getSelectedItem().toString(),
-                        genderSpinner.getSelectedItem().toString(),
-                        searchCriteria.getText().toString());
+                Object age = ageSpinner.getSelectedItem();
+                Object gender = genderSpinner.getSelectedItem();
+                Object search = searchCriteria.getText();
+                String ageString = age.toString();
+                String genderString = gender.toString();
+                String searchString = search.toString();
+                generateList(ageString, genderString, searchString);
                 adapt.notifyDataSetChanged();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                return;
             }
         });
     }
 
-    private ArrayList<String> generateList(String ageFilt, String gendFilt, CharSequence search) {
-        list.clear();
-        for (Shelter shelts : baseList) {
-            list.add(shelts.getName());
-        }
-        if (!Objects.equals(gendFilt, "Both")) {
-            for (Shelter shelts : baseList) {
+    /**
+     * Determines whether the inputs need to be used to filter the list at this time
+     * @param ageFilter String containing the age input
+     * @param genderFilter String containing the gender input
+     * @param search CharSequence containing the search input
+     * @return boolean whether the list is being filtered
+     */
+
+    public boolean isBeingFiltered(String ageFilter, String genderFilter, CharSequence search) {
+        return (!"Anyone".equals(ageFilter))
+                || !("Both".equals(genderFilter))
+                || (!"".equals(search));
+    }
+
+    private void filterAge(String ageFilter) {
+        if (!Objects.equals(ageFilter, "Anyone")) {
+            for (Shelter shelters : baseList) {
                 boolean confirmed = false;
-                String checking = shelts.getRestrictions();
-                while (checking.split(",").length > 1 && !confirmed) {
-                    if (Objects.equals(checking.split(",")[0], gendFilt)) {
+                String checking = shelters.getRestrictions();
+                while ((checking.split(",").length > 1) && (!confirmed)) {
+                    if (Objects.equals(checking.split(",")[0], ageFilter)) {
                         confirmed = true;
                     }
                     checking = checking.split(",")[1];
                 }
-                if (Objects.equals(checking, gendFilt) || confirmed) {
+                if (Objects.equals(checking, ageFilter) || confirmed) {
+                    Log.w("Swag", "Swag");
                 } else {
-                    list.remove(shelts.getName());
+                    list.remove(shelters.getName());
                 }
             }
         }
-        if (!Objects.equals(ageFilt, "Anyone")) {
-            for (Shelter shelts : baseList) {
+    }
+
+    private void filterGender(String genderFilter) {
+        if (!Objects.equals(genderFilter, "Both")) {
+            for (Shelter shelters : baseList) {
                 boolean confirmed = false;
-                String checking = shelts.getRestrictions();
-                while (checking.split(",").length > 1 && !confirmed) {
-                    if (Objects.equals(checking.split(",")[0], ageFilt)) {
+                String checking = shelters.getRestrictions();
+                while ((checking.split(",").length > 1) && (!confirmed)) {
+                    if (Objects.equals(checking.split(",")[0], genderFilter)) {
                         confirmed = true;
                     }
                     checking = checking.split(",")[1];
                 }
-                System.out.println("confirmed?" + confirmed);
-                if (Objects.equals(checking, ageFilt) || confirmed) {
+                if (Objects.equals(checking, genderFilter) || confirmed) {
+                    Log.w("Swag", "Swag");
                 } else {
-                    list.remove(shelts.getName());
+                    list.remove(shelters.getName());
                 }
             }
         }
+    }
+
+    private void filterSearch(CharSequence search) {
         if (search.length() != 0) {
-            List<String> legend = new ArrayList<>();
+            Collection<String> legend = new ArrayList<>();
             for (String name : list) {
-                if (!name.toLowerCase().contains(search.toString().toLowerCase())) {
+                String searchString = search.toString();
+                String searchLC = searchString.toLowerCase();
+                String nameLC = name.toLowerCase();
+                if (!nameLC.contains(searchLC)) {
                     legend.add(name);
                 }
             }
             list.removeAll(legend);
         }
-        return (ArrayList<String>) list;
+    }
+
+    private void generateList(String ageFilter, String genderFilter, CharSequence search) {
+        isBeingFiltered(ageFilter, genderFilter, search);
+        list.clear();
+        for (Shelter shelters : baseList) {
+            list.add(shelters.getName());
+        }
+        filterAge(ageFilter);
+        filterGender(genderFilter);
+        filterSearch(search);
     }
 
     // Create popup window with shelter details
@@ -219,7 +265,6 @@ public class SheltersFragment extends Fragment {
                     for (DataSnapshot snap : dataSnapshot.getChildren()) {
                         queryDetails = snap.getValue(Shelter.class);
                         queryDetails.setCurrentShelter(snap.getRef());
-                        System.out.println("here" + snap.getRef());
                     }
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("Shelter", queryDetails);

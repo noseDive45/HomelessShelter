@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,7 +33,9 @@ import com.google.firebase.database.FirebaseDatabase;
 
 // Firebase
 
-//
+/**
+ * This fragment allows for registration on the app
+ */
 public class RegistrationFragment extends Fragment {
 
     /**
@@ -41,7 +44,6 @@ public class RegistrationFragment extends Fragment {
 
     private TextInputEditText firstName;
     private TextInputEditText lastName;
-    private DatabaseReference database;
     private DatabaseReference userRef;
     private EditText username;
     private EditText password;
@@ -51,7 +53,14 @@ public class RegistrationFragment extends Fragment {
     private FirebaseAuth fAuth;
     private ToggleButton admin;
     private DrawerLocker lockheed;
+    private Activity activity;
+    private Editable fnEditable;
+    private Editable lnEditable;
+    private Editable unEditable;
+    private Editable p1Editable;
+    private Editable p2Editable;
 
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstance) {
         lockheed.unlocked(false);
@@ -73,43 +82,49 @@ public class RegistrationFragment extends Fragment {
     // Get all references on start
 
     private void initializeValues() {
-        admin = (ToggleButton) getActivity().findViewById(R.id.admin);
-        database = FirebaseDatabase.getInstance().getReference();
-        userRef = database.child("user");
-        firstName = (TextInputEditText) getActivity().findViewById(R.id.reg_firstname);
-        lastName = (TextInputEditText) getActivity().findViewById(R.id.reg_lastname);
-        password = (EditText) getActivity().findViewById(R.id.reg_password);
-        password2 = (EditText) getActivity().findViewById(R.id.reg_password2);
-        username = (EditText) getActivity().findViewById(R.id.reg_email);
+        activity = getActivity();
+        admin = activity.findViewById(R.id.admin);
+        userRef = FirebaseDatabase.getInstance().getReference().child("user");
+        firstName = activity.findViewById(R.id.reg_firstname);
+        lastName = activity.findViewById(R.id.reg_lastname);
+        password = activity.findViewById(R.id.reg_password);
+        password2 = activity.findViewById(R.id.reg_password2);
+        username = activity.findViewById(R.id.reg_email);
         fAuth = FirebaseAuth.getInstance();
-        regView = getActivity().findViewById(R.id.linlay);
-        progressView = getActivity().findViewById(R.id.progressBar);
+        regView = activity.findViewById(R.id.linlay);
+        progressView = activity.findViewById(R.id.progressBar);
 
         // Give button its function
-        Button regButton = (Button) getActivity().findViewById(R.id.reg_submit);
+        Button regButton = activity.findViewById(R.id.reg_submit);
         regButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptRegistration();
             }
         });
-    }
-
-    // Attempts registration starting at my cases then proceeding to
-    // firebase's cases
-
-    private void attemptRegistration() {
-
+        fnEditable = firstName.getText();
+        lnEditable = lastName.getText();
+        unEditable = username.getText();
+        p1Editable = password.getText();
+        p2Editable = password2.getText();
         firstName.setError(null);
         lastName.setError(null);
         username.setError(null);
         password.setError(null);
         password2.setError(null);
-        String fn = firstName.getText().toString();
-        String ln = lastName.getText().toString();
-        String un = username.getText().toString();
-        String p1 = password.getText().toString();
-        String p2 = password2.getText().toString();
+    }
+
+    // Attempts registration starting at my cases then proceeding to
+    // firebase's cases
+
+
+    private void attemptRegistration() {
+
+        String fn = fnEditable.toString();
+        String ln = lnEditable.toString();
+        String un = unEditable.toString();
+        String p1 = p1Editable.toString();
+        String p2 = p2Editable.toString();
         boolean cancel = false;
         View focusView = null;
 
@@ -137,7 +152,7 @@ public class RegistrationFragment extends Fragment {
         }
         // Makes sure username is not ignored as an input
 
-        if (!TextUtils.isEmpty(un) && un.length() < 1) {
+        if ((!TextUtils.isEmpty(un)) && (un.length() < 1)) {
             username.setError("This field is mandatory!  Please enter a unique username or email.");
             focusView = username;
             cancel = true;
@@ -162,7 +177,7 @@ public class RegistrationFragment extends Fragment {
         // Checks if the passwords match
 
         if (!TextUtils.isEmpty(p1) && !TextUtils.isEmpty(p2) && !matches(p1, p2)) {
-            password2.setError("The passwords you entered do not matach.");
+            password2.setError("The passwords you entered do not match.");
             focusView = password2;
             cancel = true;
         }
@@ -177,7 +192,6 @@ public class RegistrationFragment extends Fragment {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
 
-            System.out.println(un + " " + p1);
             Log.e("Trying", "login");
             if (!isValidEmail(un)) {
                 un += "@seekingshelter.com";
@@ -185,7 +199,7 @@ public class RegistrationFragment extends Fragment {
             showProgress(true);
             Log.w("Username", un);
             fAuth.createUserWithEmailAndPassword(un, p1)
-                    .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
@@ -201,14 +215,12 @@ public class RegistrationFragment extends Fragment {
                             } else {
                                 FirebaseAuthException e = (FirebaseAuthException )task
                                         .getException();
-                                Toast.makeText(getActivity(),
+                                Toast.makeText(activity,
                                         "Failed Registration: " + e.getMessage(),
                                         Toast.LENGTH_SHORT).show();
                                 showProgress(false);
-                                return;
                             }
 
-                            // ...
                         }
                     });
         }
@@ -221,31 +233,40 @@ public class RegistrationFragment extends Fragment {
         userRef.child(uid);
         userRef.child(uid).child("email").setValue(user.getEmail());
         if (!isValidEmail(username.getText().toString())) {
-            userRef.child(uid).child("username").setValue(username.getText().toString());
+            userRef.child(uid).child("username").setValue(unEditable.toString());
         } else {
             userRef.child(uid).child("username")
-                    .setValue(username.getText().toString().split("@")[0]);
+                    .setValue(unEditable.toString().split("@")[0]);
         }
         userRef.child(uid).child("admin").setValue(admin.isChecked());
-        userRef.child(uid).child("firstName").setValue(firstName.getText().toString());
+        userRef.child(uid).child("firstName").setValue(fnEditable.toString());
         userRef.child(uid).child("occupiedBeds").setValue(0);
-        userRef.child(uid).child("lastName").setValue(lastName.getText().toString());
+        userRef.child(uid).child("lastName").setValue(lnEditable.toString());
     }
 
     // Sees if you are registering with an email or a username
 
-    private boolean isValidEmail(String email) {
-        if (email.split("@").length > 1 && email.split("\\.").length > 1
-                && email.split("@")[1].length() >= 4
-                && email.split("\\.")[1].length() == 3) {
-            return true;
-        }
-        return false;
+    /**
+     * Checks if the user is registering with an email or username
+     * @param email String the username or email
+     * @return boolean saying if the input is an email
+     */
+
+    public boolean isValidEmail(String email) {
+        return (email.split("@").length > 1)
+                && (email.split("\\.").length > 1)
+                && (email.split("@")[1].length() >= 5)
+                && (email.split("\\.")[1].length() == 3);
     }
 
-    // Checks if both the passwords match
+    /**
+     * Checks if both the passwords match
+     * @param p1 String the first password input
+     * @param p2 String the second password input
+     * @return boolean whether the passwords match
+     */
 
-    private boolean matches(CharSequence p1, CharSequence p2) {
+    public boolean matches(CharSequence p1, CharSequence p2) {
         int counter = 0;
         if (p1.length() != p2.length()) {
             return false;
@@ -267,31 +288,24 @@ public class RegistrationFragment extends Fragment {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            regView.setVisibility(show ? View.GONE : View.VISIBLE);
-            regView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    regView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
+        regView.setVisibility(show ? View.GONE : View.VISIBLE);
+        regView.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                regView.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
 
-            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            progressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            regView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
+        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        progressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 }

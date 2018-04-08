@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#AED581"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.jackson.homelessshelter.Registration"
+    tools:context="com.example.jackson.homelessshelter.RegistrationFragment"
     tools:showIn="@layout/activity_registration">
 
     <ProgressBar

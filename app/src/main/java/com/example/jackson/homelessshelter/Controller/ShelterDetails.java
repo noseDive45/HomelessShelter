@@ -3,6 +3,7 @@ package com.example.jackson.homelessshelter.Controller;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,42 +23,23 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ShelterDetails.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ShelterDetails#newInstance} factory method to
- * create an instance of this fragment.
+ * This activity houses information regarding the selected shelter
  */
+
 public class ShelterDetails extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
-
-    private TextView nameView;
-    private TextView addressView;
-    private TextView phoneView;
-    private TextView capacityView;
-    private TextView genderView;
-    private TextView longitudeView;
-    private TextView latitudeView;
     private DrawerLocker lockheed;
     private EditText roomNumber;
     private Button commitReservation;
     private Shelter currentShelter;
-    private Bundle bundle;
     private android.support.v4.app.FragmentManager fragmentManager;
-    private FirebaseAuth fAuth;
-    private DatabaseReference database;
     private User currentUser;
     private LinearLayout linlayCommit;
     private TextView occupiedShelter;
     private TextView occupiedCount;
     private LinearLayout linlayCommitted;
     private TextView warning;
-    private DatabaseReference userRef;
     private Button release;
 
     @Override
@@ -68,10 +50,15 @@ public class ShelterDetails extends Fragment {
         return inflater.inflate(R.layout.fragment_shelter_details, container, false);
     }
 
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         lockheed = (DrawerLocker) activity;
     }
+
+    /**
+     * This method allows for the return to previous fragments
+     */
 
     public void onBackPressed() {
         if (fragmentManager.getBackStackEntryCount() > 0) {
@@ -85,10 +72,28 @@ public class ShelterDetails extends Fragment {
         initialize();
     }
 
+    private void setEverything() {
+        Activity activity = getActivity();
+        commitReservation = activity.findViewById(R.id.commit);
+        commitReservation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Editable swag = roomNumber.getText();
+                String rooms = swag.toString();
+                if (canReserveRoom(Integer.parseInt(rooms), currentUser, currentShelter)) {
+                    reserveARoom();
+                }
+            }
+        });
+    }
+
     private void initialize() {
-        fAuth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance().getReference();
-        userRef = database.child("user").child(fAuth.getUid());
+        setEverything();
+        FirebaseAuth fAuth = FirebaseAuth.getInstance();
+        Activity activity = getActivity();
+        DatabaseReference userRef = FirebaseDatabase.getInstance()
+                .getReference().child("user").child(fAuth.getUid());
+
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -103,36 +108,24 @@ public class ShelterDetails extends Fragment {
             }
         });
         fragmentManager = getFragmentManager();
-        linlayCommit = getActivity().findViewById(R.id.aboveCommit);
-        nameView = getActivity().findViewById(R.id.name);
-        addressView = getActivity().findViewById(R.id.address);
-        phoneView = getActivity().findViewById(R.id.phone);
-        capacityView = getActivity().findViewById(R.id.capacity);
-        genderView = getActivity().findViewById(R.id.genders);
-        longitudeView = getActivity().findViewById(R.id.longitude);
-        latitudeView = getActivity().findViewById(R.id.latitude);
-        roomNumber = getActivity().findViewById(R.id.numberOfRooms);
-        occupiedCount = getActivity().findViewById(R.id.occupiedCount);
-        occupiedShelter = getActivity().findViewById(R.id.occupiedShelter);
-        linlayCommitted = getActivity().findViewById(R.id.linLayCommitted);
-        warning = getActivity().findViewById(R.id.warning);
-        bundle = getArguments();
+        linlayCommit = activity.findViewById(R.id.aboveCommit);
+        TextView nameView = activity.findViewById(R.id.name);
+        TextView addressView = activity.findViewById(R.id.address);
+        TextView phoneView = activity.findViewById(R.id.phone);
+        TextView capacityView = activity.findViewById(R.id.capacity);
+        TextView genderView = activity.findViewById(R.id.genders);
+        TextView longitudeView = activity.findViewById(R.id.longitude);
+        TextView latitudeView = activity.findViewById(R.id.latitude);
+        Bundle bundle = getArguments();
         currentShelter = bundle.getParcelable("Shelter");
         nameView.setText(currentShelter.getName());
         addressView.setText(currentShelter.getAddress());
         phoneView.setText(currentShelter.getPhone());
-        capacityView.setText(Integer.toString(currentShelter.getCapacity()));
+        capacityView.setText(String.format("%d", currentShelter.getCapacity()));
         genderView.setText(currentShelter.getRestrictions());
-        longitudeView.setText(Double.toString(currentShelter.getLongitude()));
-        latitudeView.setText(Double.toString(currentShelter.getLatitude()));
-        commitReservation = (Button) getActivity().findViewById(R.id.commit);
-        commitReservation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                reserveARoom();
-            }
-        });
-        release = getActivity().findViewById(R.id.release);
+        longitudeView.setText(String.format("%f", currentShelter.getLongitude()));
+        latitudeView.setText(String.format("%f", currentShelter.getLatitude()));
+        release = activity.findViewById(R.id.release);
         release.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -141,16 +134,31 @@ public class ShelterDetails extends Fragment {
         });
     }
 
+    /**
+     * Determines whether a user can reserve a room at a certain shelter
+     * @param requestedRooms int number of rooms requested to be had
+     * @param currentUser User current user
+     * @param currentShelter Shelter current shelter
+     * @return whether or not the user can reserve that room
+     */
+    public boolean canReserveRoom(int requestedRooms, User currentUser, Shelter currentShelter) {
+        CharSequence userShelter = currentUser.getCurrentShelter();
+        int cap = currentShelter.getCapacity();
+        return ("NA".equals(userShelter))
+                && (requestedRooms <= cap);
+    }
+
     private void reserveARoom() {
-        String rooms = roomNumber.getText().toString();
+        Editable swag = roomNumber.getText();
+        String rooms = swag.toString();
         int number = 0;
-        View focusView = null;
+        View focusView;
         roomNumber.setError(null);
-        if (!rooms.equals("")) {
+        if (!"".equals(rooms)) {
             try {
                 number = Integer.parseInt(rooms);
             } catch (Exception e) {
-
+                roomNumber.setError("You have not entered the number of rooms you desire");
             }
             if (number == 0) {
                 roomNumber.setError("You cannot reserve 0 rooms");
@@ -159,8 +167,8 @@ public class ShelterDetails extends Fragment {
             } else if (currentShelter.getCapacity() >= number) {
                 // Reserve the room && update capacity && update occupying for user
                 currentShelter.setCapacityFirebase(currentShelter.getCapacity() - number);
-                currentUser.setCurrentShelter(currentShelter.getName(), true);
-                currentUser.setOccupiedBeds(number, true);
+                currentUser.setCurrentShelterFirebase(currentShelter.getName());
+                currentUser.setOccupiedBedsFirebase(number);
                 linlayCommit.setVisibility(View.GONE);
                 commitReservation.setVisibility(View.GONE);
                 fragmentManager.popBackStack();
@@ -177,9 +185,8 @@ public class ShelterDetails extends Fragment {
     private void releaseRoom() {
         currentShelter.setCapacityFirebase(currentUser.getOccupiedBeds()
                 + currentShelter.getCapacity());
-        currentUser.setCurrentShelter("NA", true);
-        currentUser.setOccupiedBeds(0, true);
-        System.out.println("howmanytimesforme");
+        currentUser.setCurrentShelterFirebase("NA");
+        currentUser.setOccupiedBedsFirebase(0);
         linlayCommitted.setVisibility(View.GONE);
         release.setVisibility(View.GONE);
         fragmentManager.popBackStack();
@@ -191,13 +198,13 @@ public class ShelterDetails extends Fragment {
             linlayCommit.setVisibility(View.VISIBLE);
             commitReservation.setVisibility(View.VISIBLE);
         } else if (currentUser.getCurrentShelter().equals(currentShelter.getName())) {
-            occupiedCount.setText(Integer.toString(currentUser.getOccupiedBeds()));
+            occupiedCount.setText(String.format("%d", currentUser.getOccupiedBeds()));
             occupiedShelter.setText(currentUser.getCurrentShelter());
             linlayCommitted.setVisibility(View.VISIBLE);
             release.setVisibility(View.VISIBLE);
         } else {
             warning.setVisibility(View.VISIBLE);
-            occupiedCount.setText(Integer.toString(currentUser.getOccupiedBeds()));
+            occupiedCount.setText(String.format("%d", currentUser.getOccupiedBeds()));
             occupiedShelter.setText(currentUser.getCurrentShelter());
             linlayCommitted.setVisibility(View.VISIBLE);
         }
