@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.example.jackson.homelessshelter.Model.DrawerLocker;
@@ -61,8 +62,11 @@ public class NavigationActivity extends AppCompatActivity
         String uid = fAuth.getUid();
         DatabaseReference userRef = FirebaseDatabase.getInstance()
                 .getReference().child("user").child(uid);
-        lastFirst = findViewById(R.id.firstLast);
-        usernameEmail = findViewById(R.id.usernameOrEmail);
+
+        NavigationView navView = findViewById(R.id.nav_view);
+        View hView = navView.getHeaderView(0);
+        lastFirst = hView.findViewById(R.id.firstLast);
+        usernameEmail = hView.findViewById(R.id.usernameOrEmail);
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
