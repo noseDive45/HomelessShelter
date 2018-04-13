@@ -43,7 +43,7 @@ import java.util.Objects;
 /**
  * This is the fragment containing the google map, its markers, and the filter
  */
-public class Map extends Fragment implements OnMapReadyCallback{
+public class MapFragment extends Fragment implements OnMapReadyCallback{
 
     private MapView mapView;
     private GoogleMap map;

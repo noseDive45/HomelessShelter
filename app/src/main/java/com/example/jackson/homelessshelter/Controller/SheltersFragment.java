@@ -268,7 +268,7 @@ public class SheltersFragment extends Fragment {
                     }
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("Shelter", queryDetails);
-                    android.support.v4.app.Fragment det = new ShelterDetails();
+                    android.support.v4.app.Fragment det = new ShelterDetailsFragment();
                     android.support.v4.app.FragmentManager fm = getFragmentManager();
                     android.support.v4.app.FragmentTransaction trans = fm.beginTransaction();
                     det.setArguments(bundle);

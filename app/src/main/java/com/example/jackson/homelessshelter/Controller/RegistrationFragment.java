@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -52,7 +53,7 @@ public class RegistrationFragment extends Fragment {
     private View progressView;
     private FirebaseAuth fAuth;
     private ToggleButton admin;
-    private DrawerLocker lockheed;
+//    private DrawerLocker lockheed;
     private Activity activity;
     private Editable fnEditable;
     private Editable lnEditable;
@@ -63,7 +64,7 @@ public class RegistrationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstance) {
-        lockheed.unlocked(false);
+//        lockheed.unlocked(false);
         return inflater.inflate(R.layout.activity_registration, container, false);
     }
 
@@ -76,7 +77,7 @@ public class RegistrationFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        lockheed = (DrawerLocker) activity;
+//        lockheed = (DrawerLocker) activity;
     }
 
     // Get all references on start
@@ -117,9 +118,7 @@ public class RegistrationFragment extends Fragment {
     // Attempts registration starting at my cases then proceeding to
     // firebase's cases
 
-
-    private void attemptRegistration() {
-
+    private void halfOfReg() {
         String fn = fnEditable.toString();
         String ln = lnEditable.toString();
         String un = unEditable.toString();
@@ -157,6 +156,20 @@ public class RegistrationFragment extends Fragment {
             focusView = username;
             cancel = true;
         }
+    }
+
+
+    private void attemptRegistration() {
+
+        halfOfReg();
+        String fn = fnEditable.toString();
+        String ln = lnEditable.toString();
+        String un = unEditable.toString();
+        String p1 = p1Editable.toString();
+        String p2 = p2Editable.toString();
+        boolean cancel = false;
+        View focusView = null;
+
 
         // Check for a valid password
 
@@ -206,12 +219,15 @@ public class RegistrationFragment extends Fragment {
                                 // Sign in success, update UI with the signed-in user's information
                                 FirebaseUser user = fAuth.getCurrentUser();
                                 addToDataBase(user);
-                                android.support.v4.app.Fragment loggedIn = new LoggedInFragment();
-                                android.support.v4.app.FragmentManager fm = getFragmentManager();
-                                android.support.v4.app.FragmentTransaction trans = fm
-                                        .beginTransaction();
-                                trans.replace(R.id.frag_container, loggedIn);
-                                trans.commit();
+                                Intent logIn = new Intent(getActivity(), NavigationActivity.class);
+                                getActivity().finish();
+                                startActivity(logIn);
+//                                android.support.v4.app.Fragment loggedIn = new LoggedInFragment();
+//                                android.support.v4.app.FragmentManager fm = getFragmentManager();
+//                                android.support.v4.app.FragmentTransaction trans = fm
+//                                        .beginTransaction();
+//                                trans.replace(R.id.frag_container, loggedIn);
+//                                trans.commit();
                             } else {
                                 FirebaseAuthException e = (FirebaseAuthException )task
                                         .getException();

@@ -1,13 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFECB3"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.jackson.homelessshelter.LoggedInFragment"
+    tools:context="com.example.jackson.homelessshelter.Controller.LoggedInFragment"
     tools:showIn="@layout/app_bar_logged_in">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <include layout="@layout/shelter_info"></include>
+        <include layout="@layout/release_room"></include>
+
+        <LinearLayout
+            android:id="@+id/hi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/asdf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="You do not currently have any reservations :(" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

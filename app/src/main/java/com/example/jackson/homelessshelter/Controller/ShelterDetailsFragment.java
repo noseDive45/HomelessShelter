@@ -23,11 +23,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Locale;
+
 /**
  * This activity houses information regarding the selected shelter
  */
 
-public class ShelterDetails extends Fragment {
+public class ShelterDetailsFragment extends Fragment {
 
     private DrawerLocker lockheed;
     private EditText roomNumber;
@@ -75,14 +77,15 @@ public class ShelterDetails extends Fragment {
     private void setEverything() {
         Activity activity = getActivity();
         commitReservation = activity.findViewById(R.id.commit);
+        roomNumber = activity.findViewById(R.id.numberOfRooms);
+        occupiedShelter = activity.findViewById(R.id.occupiedShelter);
+        occupiedCount = activity.findViewById(R.id.occupiedCount);
+        linlayCommitted = activity.findViewById(R.id.linLayCommitted);
+        warning = activity.findViewById(R.id.warning);
         commitReservation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Editable swag = roomNumber.getText();
-                String rooms = swag.toString();
-                if (canReserveRoom(Integer.parseInt(rooms), currentUser, currentShelter)) {
-                    reserveARoom();
-                }
+                reserveARoom();
             }
         });
     }
@@ -121,10 +124,13 @@ public class ShelterDetails extends Fragment {
         nameView.setText(currentShelter.getName());
         addressView.setText(currentShelter.getAddress());
         phoneView.setText(currentShelter.getPhone());
-        capacityView.setText(String.format("%d", currentShelter.getCapacity()));
+        capacityView.setText(String.format(Locale.getDefault(),
+                "%d", currentShelter.getCapacity()));
         genderView.setText(currentShelter.getRestrictions());
-        longitudeView.setText(String.format("%f", currentShelter.getLongitude()));
-        latitudeView.setText(String.format("%f", currentShelter.getLatitude()));
+        longitudeView.setText(String.format(Locale.getDefault(),
+                "%f", currentShelter.getLongitude()));
+        latitudeView.setText(String.format(Locale.getDefault(),
+                "%f", currentShelter.getLatitude()));
         release = activity.findViewById(R.id.release);
         release.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,20 +138,6 @@ public class ShelterDetails extends Fragment {
                 releaseRoom();
             }
         });
-    }
-
-    /**
-     * Determines whether a user can reserve a room at a certain shelter
-     * @param requestedRooms int number of rooms requested to be had
-     * @param currentUser User current user
-     * @param currentShelter Shelter current shelter
-     * @return whether or not the user can reserve that room
-     */
-    public boolean canReserveRoom(int requestedRooms, User currentUser, Shelter currentShelter) {
-        CharSequence userShelter = currentUser.getCurrentShelter();
-        int cap = currentShelter.getCapacity();
-        return ("NA".equals(userShelter))
-                && (requestedRooms <= cap);
     }
 
     private void reserveARoom() {
@@ -188,25 +180,32 @@ public class ShelterDetails extends Fragment {
         currentUser.setCurrentShelterFirebase("NA");
         currentUser.setOccupiedBedsFirebase(0);
         linlayCommitted.setVisibility(View.GONE);
-        release.setVisibility(View.GONE);
+        linlayCommit.setVisibility(View.VISIBLE);
         fragmentManager.popBackStack();
     }
 
 
     private void determineVisibility() {
+        CharSequence currentUserShelter = currentUser.getCurrentShelter();
+        CharSequence currentShelterName = currentShelter.getName();
         if (currentUser.getOccupiedBeds() == 0) {
+            linlayCommitted.setVisibility(View.GONE);
             linlayCommit.setVisibility(View.VISIBLE);
             commitReservation.setVisibility(View.VISIBLE);
-        } else if (currentUser.getCurrentShelter().equals(currentShelter.getName())) {
-            occupiedCount.setText(String.format("%d", currentUser.getOccupiedBeds()));
+        } else if (currentUserShelter.equals(currentShelterName)) {
+            occupiedCount.setText(String.format(Locale.getDefault(),
+                    "%d", currentUser.getOccupiedBeds()));
             occupiedShelter.setText(currentUser.getCurrentShelter());
             linlayCommitted.setVisibility(View.VISIBLE);
             release.setVisibility(View.VISIBLE);
         } else {
             warning.setVisibility(View.VISIBLE);
-            occupiedCount.setText(String.format("%d", currentUser.getOccupiedBeds()));
+            occupiedCount.setText(String.format(Locale.getDefault(),
+                    "%d", currentUser.getOccupiedBeds()));
+            System.out.println("fuck" + currentUser.getCurrentShelter());
             occupiedShelter.setText(currentUser.getCurrentShelter());
             linlayCommitted.setVisibility(View.VISIBLE);
+            release.setVisibility(View.GONE);
         }
     }
 

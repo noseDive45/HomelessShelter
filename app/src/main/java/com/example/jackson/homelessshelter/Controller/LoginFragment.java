@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -55,7 +56,7 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-    private DrawerLocker lockheed;
+//    private DrawerLocker lockheed;
 
     // Get firebase auth & database instance
     private FirebaseAuth fAuth;
@@ -63,7 +64,7 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        lockheed.unlocked(false);
+//        lockheed.unlocked(false);
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
 
@@ -76,11 +77,11 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
             nextPageSelection();
         }
     }
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        lockheed = (DrawerLocker) activity;
-    }
+//    @Override
+//    public void onAttach(Activity activity) {
+//        super.onAttach(activity);
+//        lockheed = (DrawerLocker) activity;
+//    }
 
     // Get initial References
 
@@ -125,11 +126,14 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
 
     private void nextPageSelection() {
-        android.support.v4.app.Fragment loggedIn = new LoggedInFragment();
-        android.support.v4.app.FragmentManager fm = getFragmentManager();
-        android.support.v4.app.FragmentTransaction trans = fm.beginTransaction();
-        trans.replace(R.id.frag_container, loggedIn);
-        trans.commit();
+        Intent next = new Intent(getActivity() ,NavigationActivity.class);
+        getActivity().finish();
+        startActivity(next);
+//        android.support.v4.app.Fragment loggedIn = new LoggedInFragment();
+//        android.support.v4.app.FragmentManager fm = getFragmentManager();
+//        android.support.v4.app.FragmentTransaction trans = fm.beginTransaction();
+//        trans.replace(R.id.notLoggedInFrag, loggedIn);
+//        trans.commit();
     }
 
 
@@ -225,7 +229,8 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
         android.support.v4.app.Fragment reg = new RegistrationFragment();
         android.support.v4.app.FragmentManager fm = getFragmentManager();
         android.support.v4.app.FragmentTransaction trans = fm.beginTransaction();
-        trans.replace(R.id.frag_container, reg);
+        trans.addToBackStack("login");
+        trans.replace(R.id.notLoggedInFrag, reg);
         trans.commit();
 //        Intent regScreen = new Intent(getActivity(), Registration.class);
 //        startActivity(regScreen);
@@ -313,7 +318,5 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
         mEmailView.setAdapter(adapter);
     }
-
-
 }
 

@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
  * Test
  */
 
-public class FieldsPopulatedTest {
+public class JUnitTests {
 
     // Jackson Cook
 
@@ -30,6 +30,7 @@ public class FieldsPopulatedTest {
     @Test
     public void matches() throws Exception {
         RegistrationFragment registrationFragment = new RegistrationFragment();
+        assertEquals(false, registrationFragment.matches("swag", "swa1"));
         assertEquals(true, registrationFragment.matches("swag", "swag"));
         assertEquals(false, registrationFragment.matches("swag", "lag"));
     }
@@ -74,17 +75,17 @@ public class FieldsPopulatedTest {
 
     @Test
     public void canReserveRoom() throws Exception {
-        ShelterDetails shelterDetails = new ShelterDetails();
+        ShelterDetailsFragment shelterDetailsFragment = new ShelterDetailsFragment();
         User user = new User();
         user.setCurrentShelter("NA");
         Shelter shelter = new Shelter();
         shelter.setCapacity(100);
-        assertEquals(true, shelterDetails
+        assertEquals(true, shelterDetailsFragment
                 .canReserveRoom(55, user, shelter));
-        assertEquals(false, shelterDetails
+        assertEquals(false, shelterDetailsFragment
                 .canReserveRoom(105, user, shelter));
         user.setCurrentShelter("Swag");
-        assertEquals(false, shelterDetails
+        assertEquals(false, shelterDetailsFragment
                 .canReserveRoom(55, user, shelter));
     }
 
